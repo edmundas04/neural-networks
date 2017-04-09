@@ -7,8 +7,6 @@ namespace NeuralNetworks.ConsoleSamples
     {
         static void Main(string[] args)
         {
-            //RunExample(new DigitsRecognitionExample());
-
             Run();
         }
 

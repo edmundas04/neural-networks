@@ -18,21 +18,25 @@ namespace NeuralNetworks.Running
             for (var index = 0; index < inputValues.Count; ++index)
             {
                 neuralNetwork.InputNeurons[index].Input = inputValues[index];
-                neuralNetwork.InputNeurons[index].ProduceOutput();
             }
-            var intSet = new HashSet<int>();
-            foreach (var synapseLayer in neuralNetwork.SynapseLayers)
+
+            for (int i = 0; i < neuralNetwork.SynapseLayers.Count; i++)
             {
-                foreach (var synapse in synapseLayer)
+                var synapseLayer = neuralNetwork.SynapseLayers[i];
+                var neurons = i == 0 ? neuralNetwork.InputNeurons : neuralNetwork.HiddenNeuronLayers[i - 1];
+                for (int j = 0; j < neurons.Count; j++)
                 {
-                    if (!intSet.Contains(synapse.Primary.Id))
-                    {
-                        intSet.Add(synapse.Primary.Id);
-                        synapse.Primary.ProduceOutput();
-                    }
+                    neurons[j].ProduceOutput();
+                }
+
+                for (int j = 0; j < synapseLayer.Count; j++)
+                {
+                    var synapse = synapseLayer[j];
                     synapse.Target.Input += synapse.Weight * synapse.Primary.Output;
                 }
+
             }
+
             foreach (var outputNeuron in neuralNetwork.OutputNeurons)
             {
                 outputNeuron.ProduceOutput();

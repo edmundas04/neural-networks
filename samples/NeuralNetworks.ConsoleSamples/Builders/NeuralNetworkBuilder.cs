@@ -7,7 +7,6 @@ namespace NeuralNetworks.ConsoleSamples.Builders
 {
     public class NeuralNetworkBuilder
     {
-        private int _index;
         private readonly List<List<Neuron>> _neuronLayers;
         private readonly List<List<Synapse>> _synapseLayers;
         private readonly IActivationFunction _sigmoid;
@@ -19,7 +18,6 @@ namespace NeuralNetworks.ConsoleSamples.Builders
             _synapseLayers = new List<List<Synapse>>();
             _sigmoid = new Sigmoid();
             _inputActivationFunction = new InputActivationFunction();
-            _index = 0;
         }
 
         public NeuralNetworkBuilder AddNeuronLayer(int numberOfNeurons, double defaultBias, double defaultWeight)
@@ -29,28 +27,23 @@ namespace NeuralNetworks.ConsoleSamples.Builders
                 throw new ArgumentException("numberOfNeurons");
             }
 
-            var neuronList1 = new List<Neuron>();
-            var activationFunction1 = _neuronLayers.Count == 0 ? _inputActivationFunction : _sigmoid;
+            var neurons = new List<Neuron>();
+            var activationFunction = _neuronLayers.Count == 0 ? _inputActivationFunction : _sigmoid;
             while (numberOfNeurons-- > 0)
             {
-                var neuronList2 = neuronList1;
-                var activationFunction2 = activationFunction1;
                 var bias = defaultBias;
-                var index = _index;
-                _index = index + 1;
-                var id = index;
-                var neuron = new Neuron(activationFunction2, bias, id);
-                neuronList2.Add(neuron);
+                var neuron = new Neuron(activationFunction, bias);
+                neurons.Add(neuron);
             }
-            _neuronLayers.Add(neuronList1);
+            _neuronLayers.Add(neurons);
 
             if (_neuronLayers.Count < 2)
             {
                 return this;
             }
 
-            var list = _neuronLayers.Skip(Math.Max(0, _neuronLayers.Count() - 2)).ToList();
-            ConnectLayers(list[0], list[1], defaultWeight);
+            var neuronLayer = _neuronLayers.Skip(Math.Max(0, _neuronLayers.Count() - 2)).ToList();
+            ConnectLayers(neuronLayer[0], neuronLayer[1], defaultWeight);
             return this;
         }
 
@@ -61,12 +54,7 @@ namespace NeuralNetworks.ConsoleSamples.Builders
             {
                 foreach (var targetNeuron in targetLayer)
                 {
-                    synapseLayer.Add(new Synapse(_index++)
-                    {
-                        Weight = defaultWeight,
-                        Primary = primaryNeuron,
-                        Target = targetNeuron
-                    });
+                    synapseLayer.Add(new Synapse(primaryNeuron, targetNeuron, defaultWeight));
                 }
             }
             _synapseLayers.Add(synapseLayer);
@@ -74,7 +62,6 @@ namespace NeuralNetworks.ConsoleSamples.Builders
 
         public NeuralNetwork Build()
         {
-            _index = 0;
             if (_neuronLayers.Count < 2)
             {
                 throw new Exception("Neural network is not completely built");

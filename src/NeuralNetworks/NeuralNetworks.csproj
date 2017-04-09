@@ -50,7 +50,7 @@
     <Compile Include="Running\IRunner.cs" />
     <Compile Include="Running\NeuralNetworkRunner.cs" />
     <Compile Include="Synapse.cs" />
-    <Compile Include="Training\BackpropagationResult.cs" />
+    <Compile Include="Training\Gradients.cs" />
     <Compile Include="Training\ITrainer.cs" />
     <Compile Include="Training\StochasticGradientDescent.cs" />
     <Compile Include="Training\TrainingElement.cs" />
