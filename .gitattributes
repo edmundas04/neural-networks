@@ -1,4 +1,2 @@
-samples/NeuralNetworks.ConsoleSample/Resources/digits-image-validation-set.json filter=lfs diff=lfs merge=lfs -text
-samples/NeuralNetworks.ConsoleSample/Resources/digits-image-training-set.json filter=lfs diff=lfs merge=lfs -text
 samples/NeuralNetworks.ConsoleSamples/Resources/digits-image-validation-set.json filter=lfs diff=lfs merge=lfs -text
 samples/NeuralNetworks.ConsoleSamples/Resources/digits-image-training-set.json filter=lfs diff=lfs merge=lfs -text

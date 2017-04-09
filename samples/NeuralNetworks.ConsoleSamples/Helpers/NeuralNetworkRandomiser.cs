@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace NeuralNetworks.ConsoleSample.Helpers
+namespace NeuralNetworks.ConsoleSamples.Helpers
 {
     public static class NeuralNetworkRandomiser
     {

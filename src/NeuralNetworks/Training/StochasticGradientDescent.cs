@@ -41,18 +41,18 @@ namespace NeuralNetworks.Training
                 throw new Exception(string.Format("All expected outputs of test data must be length of {0}", neuralNetwork.OutputNeurons.Count));
             }
                 
-            var count = 0;
+            var skip = 0;
             var epochs = _epochs;
             while (epochs-- > 0)
             {
                 trainingData.Shuffle();
-                while (count + _trainingBatchSize <= trainingData.Count)
+                while (skip + _trainingBatchSize <= trainingData.Count)
                 {
-                    var trainingBatch = trainingData.Skip(count).Take(_trainingBatchSize).ToList();
+                    var trainingBatch = trainingData.Skip(skip).Take(_trainingBatchSize).ToList();
                     PerformGradientDescent(neuralNetwork, trainingBatch);
-                    count += _trainingBatchSize;
+                    skip += _trainingBatchSize;
                 }
-                count = 0;
+                skip = 0;
             }
         }
 

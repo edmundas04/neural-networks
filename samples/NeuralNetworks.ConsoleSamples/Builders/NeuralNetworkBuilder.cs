@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace NeuralNetworks.ConsoleSample.Builders
+namespace NeuralNetworks.ConsoleSamples.Builders
 {
     public class NeuralNetworkBuilder
     {
