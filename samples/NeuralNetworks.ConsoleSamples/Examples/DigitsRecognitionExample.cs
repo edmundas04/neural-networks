@@ -3,6 +3,8 @@ using NeuralNetworks.ConsoleSamples.Builders;
 using NeuralNetworks.ConsoleSamples.Helpers;
 using NeuralNetworks.Running;
 using NeuralNetworks.Training;
+using System;
+using System.Collections.Generic;
 
 namespace NeuralNetworks.ConsoleSamples.Examples
 {
@@ -17,12 +19,45 @@ namespace NeuralNetworks.ConsoleSamples.Examples
         
         public void Train(NeuralNetwork neuralNetwork)
         {
-            var trainingData = TrainingDataLoader.Load("NeuralNetworks.ConsoleSamples.Resources.digits-image-validation-set.json");
-            new StochasticGradientDescent(new Sigmoid(), new NeuralNetworkRunner(), 2, 20, 3.0).Train(neuralNetwork, trainingData);
+            var trainingData = TrainingDataLoader.Load("NeuralNetworks.ConsoleSamples.Resources.digits-image-training-set.json");
+            var stochasticGradientDescent = new StochasticGradientDescent(new Sigmoid(), new NeuralNetworkRunner(), 2, 20, 3D);
+            stochasticGradientDescent.Train(neuralNetwork, trainingData);
         }
 
         public void DisplayEvaluation(NeuralNetwork neuralNetwork)
         {
+            var validationData = TrainingDataLoader.Load("NeuralNetworks.ConsoleSamples.Resources.digits-image-validation-set.json");
+            var neuralNetworkRunner = new NeuralNetworkRunner();
+
+            var correctCount = 0;
+
+            foreach (var validationItem in validationData)
+            {
+                var output = neuralNetworkRunner.Run(neuralNetwork, validationItem.Inputs);
+                if(CheckOutput(output, validationItem.ExpectedOutputs))
+                {
+                    correctCount++;
+                }
+            }
+
+            Console.WriteLine($"{correctCount}/{validationData.Count}");
+        }
+
+        public bool CheckOutput(List<double> output, List<double> expectedOutput)
+        {
+            var maxIndex = 0;
+            var maxValue = output[0];
+
+            for (int i = 1; i < output.Count; i++)
+            {
+                if(output[i] > maxValue)
+                {
+                    maxValue = output[i];
+                    maxIndex = i;
+                }
+            }
+
+            return expectedOutput[maxIndex] == 1D;
         }
     }
 }
