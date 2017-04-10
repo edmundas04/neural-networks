@@ -20,7 +20,7 @@ namespace NeuralNetworks.ConsoleSamples.Examples
         public void Train(NeuralNetwork neuralNetwork)
         {
             var trainingData = TrainingDataLoader.Load("NeuralNetworks.ConsoleSamples.Resources.digits-image-training-set.json");
-            var stochasticGradientDescent = new StochasticGradientDescent(new Sigmoid(), new NeuralNetworkRunner(), 2, 20, 3D);
+            var stochasticGradientDescent = new StochasticGradientDescent(new Sigmoid(), 2, 20, 3D);
             stochasticGradientDescent.Train(neuralNetwork, trainingData);
         }
 
@@ -34,13 +34,13 @@ namespace NeuralNetworks.ConsoleSamples.Examples
             foreach (var validationItem in validationData)
             {
                 var output = neuralNetworkRunner.Run(neuralNetwork, validationItem.Inputs);
-                if(CheckOutput(output, validationItem.ExpectedOutputs))
+                if (CheckOutput(output, validationItem.ExpectedOutputs))
                 {
                     correctCount++;
                 }
             }
 
-            Console.WriteLine($"{correctCount}/{validationData.Count}");
+            Console.WriteLine($"Correctly recognized {correctCount} digits out of {validationData.Count}");
         }
 
         public bool CheckOutput(List<double> output, List<double> expectedOutput)

@@ -43,6 +43,7 @@
     <Compile Include="ActivationFunctions\IActivationFunction.cs" />
     <Compile Include="ActivationFunctions\InputActivationFunction.cs" />
     <Compile Include="ActivationFunctions\Sigmoid.cs" />
+    <Compile Include="Extensions\ArrayExtensions.cs" />
     <Compile Include="Extensions\ListExtensions.cs" />
     <Compile Include="NeuralNetwork.cs" />
     <Compile Include="Neuron.cs" />

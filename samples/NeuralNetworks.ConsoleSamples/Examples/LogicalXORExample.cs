@@ -29,8 +29,7 @@ namespace NeuralNetworks.ConsoleSamples.Examples
         public void Train(NeuralNetwork neuralNetwork)
         {
             var neuralNetworkRunner = new NeuralNetworkRunner();
-            var stochasticGradientDescent = new StochasticGradientDescent(new Sigmoid(), neuralNetworkRunner, 3000, 4, 5D);
-
+            var stochasticGradientDescent = new StochasticGradientDescent(new Sigmoid(),  3000, 4, 5D);
             var trainingData = new List<TrainingElement>
             {
                 new TrainingElement
