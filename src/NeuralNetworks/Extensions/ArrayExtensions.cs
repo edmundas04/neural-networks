@@ -6,9 +6,13 @@
         {
             for (int i = 0; i < source.Length; i++)
             {
-                for (int j = 0; j < source[i].Length; j++)
+                var innerArray = source[i];
+                var targetArray = target[i];
+
+                var innerArrayLegth = innerArray.Length;
+                for (int j = 0; j < innerArrayLegth; j++)
                 {
-                    target[i][j] += source[i][j];
+                    targetArray[j] += innerArray[j];
                 }
             }
         }
