@@ -34,23 +34,23 @@ namespace NeuralNetworks.ConsoleSamples.Examples
             {
                 new TrainingElement
                 {
-                    Inputs = new List<double> { 0D, 0D },
-                    ExpectedOutputs = new List<double> { 0D }
+                    Inputs = new double[] { 0D, 0D },
+                    ExpectedOutputs = new double[] { 0D }
                 },
                 new TrainingElement
                 {
-                    Inputs = new List<double> { 1D, 0D },
-                    ExpectedOutputs = new List<double> { 1D }
+                    Inputs = new double[] { 1D, 0D },
+                    ExpectedOutputs = new double[] { 1D }
                 },
                 new TrainingElement
                 {
-                    Inputs = new List<double> { 0D, 1D },
-                    ExpectedOutputs = new List<double> { 1D }
+                    Inputs = new double[] { 0D, 1D },
+                    ExpectedOutputs = new double[] { 1D }
                 },
                 new TrainingElement
                 {
-                    Inputs = new List<double> { 1D, 1d },
-                    ExpectedOutputs = new List<double> { 0D }
+                    Inputs = new double[] { 1D, 1d },
+                    ExpectedOutputs = new double[] { 0D }
                 }
             };
             

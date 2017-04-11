@@ -24,7 +24,6 @@ namespace NeuralNetworks.ConsoleSamples
                     RunExample(new LogicalXORExample());
                     break;
                 case "2":
-                    //Currently works too slow
                     RunExample(new DigitsRecognitionExample());
                     break;
                 default:

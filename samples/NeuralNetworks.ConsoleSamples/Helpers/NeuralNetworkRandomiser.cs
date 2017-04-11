@@ -4,7 +4,7 @@ namespace NeuralNetworks.ConsoleSamples.Helpers
 {
     public static class NeuralNetworkRandomiser
     {
-        private static readonly Random _random = new Random();
+        private static readonly Random _random = new Random(5);
 
         public static void Randomise(NeuralNetwork neuralNetwork, double range)
         {

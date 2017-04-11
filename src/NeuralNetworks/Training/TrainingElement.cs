@@ -4,8 +4,8 @@ namespace NeuralNetworks.Training
 {
     public class TrainingElement
     {
-        public List<double> Inputs { get; set; }
+        public double[] Inputs { get; set; }
 
-        public List<double> ExpectedOutputs { get; set; }
+        public double[] ExpectedOutputs { get; set; }
     }
 }

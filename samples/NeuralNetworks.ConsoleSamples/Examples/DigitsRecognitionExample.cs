@@ -5,6 +5,7 @@ using NeuralNetworks.Running;
 using NeuralNetworks.Training;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace NeuralNetworks.ConsoleSamples.Examples
 {
@@ -33,8 +34,8 @@ namespace NeuralNetworks.ConsoleSamples.Examples
 
             foreach (var validationItem in validationData)
             {
-                var output = neuralNetworkRunner.Run(neuralNetwork, validationItem.Inputs);
-                if (CheckOutput(output, validationItem.ExpectedOutputs))
+                var output = neuralNetworkRunner.Run(neuralNetwork, validationItem.Inputs.ToList());
+                if (CheckOutput(output, validationItem.ExpectedOutputs.ToList()))
                 {
                     correctCount++;
                 }

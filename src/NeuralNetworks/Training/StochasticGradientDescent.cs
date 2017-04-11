@@ -28,12 +28,12 @@ namespace NeuralNetworks.Training
                 throw new Exception("Training batch must be greater than trainingData size");
             }
 
-            if (!trainingData.All(x => x.Inputs.Count == neuralNetwork.InputNeurons.Count))
+            if (!trainingData.All(x => x.Inputs.Length == neuralNetwork.InputNeurons.Count))
             {
                 throw new Exception(string.Format("All inputs of test data must be length of {0}", neuralNetwork.InputNeurons.Count));
             }
 
-            if (!trainingData.All(x => x.ExpectedOutputs.Count == neuralNetwork.OutputNeurons.Count))
+            if (!trainingData.All(x => x.ExpectedOutputs.Length == neuralNetwork.OutputNeurons.Count))
             {
                 throw new Exception(string.Format("All expected outputs of test data must be length of {0}", neuralNetwork.OutputNeurons.Count));
             }
@@ -61,7 +61,7 @@ namespace NeuralNetworks.Training
             {
                 for (int j = 0; j < neuronsBiases[i].Length; j++)
                 {
-                    if (i+1 == neuronsBiases.Length)
+                    if (i + 1 == neuronsBiases.Length)
                     {
                         neuralNetwork.OutputNeurons[j].Bias = neuronsBiases[i][j];
                     }
@@ -89,11 +89,9 @@ namespace NeuralNetworks.Training
             for (int i = 0; i < trainingBatch.Count; i++)
             {
                 var trainingElement = trainingBatch[i];
-                var backpropagationResult = Backpropagation(neuronsBiases, synapsesWeights, trainingElement.Inputs, trainingElement.ExpectedOutputs);
-                neuronGradients.Sum(backpropagationResult.NeuronsGradients);
-                synapseGradients.Sum(backpropagationResult.SynapsesGradients);
+                var backpropagationResult = Backpropagation(synapseGradients, neuronsBiases, synapsesWeights, trainingElement.Inputs, trainingElement.ExpectedOutputs);
+                neuronGradients.Sum(backpropagationResult);
             }
-
 
             for (int i = 0; i < neuronsBiases.Length; i++)
             {
@@ -112,17 +110,13 @@ namespace NeuralNetworks.Training
             }
         }
 
-        private Gradients Backpropagation(double[][] neuronsBiases, double[][] synapsesWeights, List<double> inputs, List<double> expectedOutputs)
+        private double[][] Backpropagation(double[][] synapsesGradients, double[][] neuronsBiases, double[][] synapsesWeights, double[] inputs, double[] expectedOutputs)
         {
-            //????
-            var inputsArray = inputs.ToArray();
-
-            var feedForwardResult = FeedForward(neuronsBiases, synapsesWeights, inputsArray);
+            var feedForwardResult = FeedForward(neuronsBiases, synapsesWeights, inputs);
             var neuronsInputs = feedForwardResult.ProducedInputs;
             var neuronsOutputs = feedForwardResult.ProducedOutputs;
 
             var neuronsGradients = neuronsBiases.CopyWithZeros();
-            var synapsesGradients = synapsesWeights.CopyWithZeros();
 
             var outputLayerIndex = neuronsGradients.Length - 1;
 
@@ -132,7 +126,7 @@ namespace NeuralNetworks.Training
             {
                 var expectedOutput = expectedOutputs[i];
                 var gradient = (neuronsOutputs[outputLayerIndex][i] - expectedOutput) * _activationFunction.ActivationDerivative(neuronsBiases[outputLayerIndex][i] + neuronsInputs[outputLayerIndex][i]);
-                neuronsGradients[outputLayerIndex][i] = gradient;
+                neuronsGradients[outputLayerIndex][i] += gradient;
             }
 
             for (var i = synapsesGradients.Length - 1; i > 0; i--)
@@ -149,15 +143,13 @@ namespace NeuralNetworks.Training
                 var primaryNeuronsCount = neuronsInputs[i - 1].Length;
                 var targetNeuronsCount = neuronsInputs[i].Length;
 
-                var currentLayerSynapseGrdients = synapsesGradients[i];
-
                 synapseIndex = 0;
 
                 for (int j = 0; j < primaryNeuronsCount; j++)
                 {
                     for (int k = 0; k < targetNeuronsCount; k++)
                     {
-                        layerSynapsesGradients[synapseIndex] = layerPrimaryNeuronsOutputs[j] * layerTargetNeuronsGradients[k];
+                        layerSynapsesGradients[synapseIndex] += layerPrimaryNeuronsOutputs[j] * layerTargetNeuronsGradients[k];
                         layerPrimaryNeuronsGradients[j] += layerTargetNeuronsGradients[k] * layerSynapsesWeights[synapseIndex];
                         synapseIndex++;
                     }
@@ -169,7 +161,7 @@ namespace NeuralNetworks.Training
                 }
             }
 
-            var inputNeuronsCount = inputsArray.Length;
+            var inputNeuronsCount = inputs.Length;
             var firstLayerNeuronsCount = neuronsInputs[0].Length;
 
             var firstLayerTargetNeuronsGradients = neuronsGradients[0];
@@ -181,12 +173,12 @@ namespace NeuralNetworks.Training
             {
                 for (int k = 0; k < firstLayerNeuronsCount; k++)
                 {
-                    firstLayerSynapsesGradients[synapseIndex] = inputsArray[j] * firstLayerTargetNeuronsGradients[k];
+                    firstLayerSynapsesGradients[synapseIndex] += inputs[j] * firstLayerTargetNeuronsGradients[k];
                     synapseIndex++;
                 }
             }
 
-            return new Gradients { NeuronsGradients = neuronsGradients, SynapsesGradients = synapsesGradients };
+            return neuronsGradients;
         }
 
         private FeedForwardResult FeedForward(double[][] neuronsBiases, double[][] synapsesWeights, double[] inputs)
