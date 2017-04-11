@@ -101,11 +101,18 @@ namespace NeuralNetworks.Training
                 }
             }
 
+
+            var learningRate = (_learningRate / _trainingBatchSize);
             for (int i = 0; i < synapsesWeights.Length; i++)
             {
-                for (int j = 0; j < synapsesWeights[i].Length; j++)
+                var layerSynapsesWeights = synapsesWeights[i];
+                var layerSynapsesGradients = synapseGradients[i];
+
+                var synapsesLayerCount = layerSynapsesWeights.Length;
+
+                for (int j = 0; j < synapsesLayerCount; j++)
                 {
-                    synapsesWeights[i][j] -= (_learningRate / _trainingBatchSize) * synapseGradients[i][j];
+                    layerSynapsesWeights[j] -= learningRate * layerSynapsesGradients[j];
                 }
             }
         }
