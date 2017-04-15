@@ -21,29 +21,28 @@ namespace NeuralNetworks.Training
             _learningRate = learningRate;
         }
 
-        public void Train(NeuralNetwork neuralNetwork, List<TrainingElement> trainingData)
+        public void Train(NeuralNetworkDto dto, List<TrainingElement> trainingData)
         {
             if (trainingData.Count < _trainingBatchSize)
             {
                 throw new Exception("Training batch must be greater than trainingData size");
             }
 
-            if (!trainingData.All(x => x.Inputs.Length == neuralNetwork.InputNeurons.Count))
+            if (!trainingData.All(x => x.Inputs.Length == dto.InputNeuronsCount))
             {
-                throw new Exception(string.Format("All inputs of test data must be length of {0}", neuralNetwork.InputNeurons.Count));
+                throw new Exception(string.Format("All inputs of test data must be length of {0}", dto.InputNeuronsCount));
             }
 
-            if (!trainingData.All(x => x.ExpectedOutputs.Length == neuralNetwork.OutputNeurons.Count))
+            if (!trainingData.All(x => x.ExpectedOutputs.Length == dto.NeuronsLayers.Last().Count))
             {
-                throw new Exception(string.Format("All expected outputs of test data must be length of {0}", neuralNetwork.OutputNeurons.Count));
+                throw new Exception(string.Format("All expected outputs of test data must be length of {0}", dto.NeuronsLayers.Last().Count));
             }
 
             var skip = 0;
             var epochs = _epochs;
-
-            var neurons = neuralNetwork.HiddenNeuronLayers.Union(new List<List<Neuron>> { neuralNetwork.OutputNeurons });
-            var neuronsBiases = neurons.Select(s => s.Select(x => x.Bias).ToArray()).ToArray();
-            var synapsesWeights = neuralNetwork.SynapseLayers.Select(s => s.Select(x => x.Weight).ToArray()).ToArray();
+            
+            var neuronsBiases = dto.ToBiasesArray();
+            var synapsesWeights = dto.ToWeightsArray();
 
             while (epochs-- > 0)
             {
@@ -57,27 +56,28 @@ namespace NeuralNetworks.Training
                 skip = 0;
             }
 
+
+
             for (int i = 0; i < neuronsBiases.Length; i++)
             {
+                var positionNeuronMap = dto.NeuronsLayers[i].ToDictionary(x => x.Position);
+
                 for (int j = 0; j < neuronsBiases[i].Length; j++)
                 {
-                    if (i + 1 == neuronsBiases.Length)
-                    {
-                        neuralNetwork.OutputNeurons[j].Bias = neuronsBiases[i][j];
-                    }
-                    else
-                    {
-                        neuralNetwork.HiddenNeuronLayers[i][j].Bias = neuronsBiases[i][j];
-                    }
+                    positionNeuronMap[j].Bias = neuronsBiases[i][j];
                 }
             }
 
             for (int i = 0; i < synapsesWeights.Length; i++)
             {
+                var targetNeuronsCount = neuronsBiases[i].Length;
+                var positionSynapseMap = dto.SynapsesLayers[i].ToDictionary(x => x.PrimaryNeuronPosition * targetNeuronsCount + x.TargetNeuronPosition);
+
                 for (int j = 0; j < synapsesWeights[i].Length; j++)
                 {
-                    neuralNetwork.SynapseLayers[i][j].Weight = synapsesWeights[i][j];
+                    positionSynapseMap[j].Weight = synapsesWeights[i][j];
                 }
+
             }
         }
 

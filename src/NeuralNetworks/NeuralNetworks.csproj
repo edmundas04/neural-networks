@@ -45,12 +45,11 @@
     <Compile Include="ActivationFunctions\Sigmoid.cs" />
     <Compile Include="Extensions\ArrayExtensions.cs" />
     <Compile Include="Extensions\ListExtensions.cs" />
+    <Compile Include="Extensions\NeuralNetworkDtoExtensions.cs" />
+    <Compile Include="INeuralNetwork.cs" />
     <Compile Include="NeuralNetwork.cs" />
-    <Compile Include="Neuron.cs" />
+    <Compile Include="NeuralNetworkDtoNew.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Running\IRunner.cs" />
-    <Compile Include="Running\NeuralNetworkRunner.cs" />
-    <Compile Include="Synapse.cs" />
     <Compile Include="Training\Gradients.cs" />
     <Compile Include="Training\ITrainer.cs" />
     <Compile Include="Training\StochasticGradientDescent.cs" />

@@ -6,14 +6,21 @@ namespace NeuralNetworks.ConsoleSamples.Helpers
     {
         private static readonly Random _random = new Random(5);
 
-        public static void Randomise(NeuralNetwork neuralNetwork, double range)
+        public static void Randomise(NeuralNetworkDto dto, double range)
         {
-            foreach (var synapseLayer in neuralNetwork.SynapseLayers)
+            foreach (var synapseLayer in dto.SynapsesLayers)
             {
                 foreach (var synapse in synapseLayer)
                 {
                     synapse.Weight = GetRandomNumber(range);
-                    synapse.Target.Bias = GetRandomNumber(range);
+                }
+            }
+
+            foreach (var neuronsLayer in dto.NeuronsLayers)
+            {
+                foreach (var neuron in neuronsLayer)
+                {
+                    neuron.Bias = GetRandomNumber(range);
                 }
             }
         }

@@ -4,6 +4,6 @@ namespace NeuralNetworks.Training
 {
     public interface ITrainer
     {
-        void Train(NeuralNetwork neuralNetwork, List<TrainingElement> trainingData);
+        void Train(NeuralNetworkDto neuralNetwork, List<TrainingElement> trainingData);
     }
 }
