@@ -11,7 +11,8 @@ namespace NeuralNetworks.ActivationFunctions
 
         public double ActivationDerivative(double z)
         {
-            return Activate(z) * (1.0 - Activate(z));
+            var activation = Activate(z);
+            return activation * (1.0 - activation);
         }
     }
 }
