@@ -18,8 +18,11 @@ namespace NeuralNetworks.ConsoleSamples.Examples
         
         public void Train(NeuralNetworkDto neuralNetwork)
         {
+            Console.WriteLine("Loading training data");
             var trainingData = TrainingDataLoader.Load("NeuralNetworks.ConsoleSamples.Resources.digits-image-training-set.json");
+            Console.WriteLine("Started training");
             var stochasticGradientDescent = new StochasticGradientDescent(new Sigmoid(), new Quadratic(), 2, 20, 3D);
+            Console.WriteLine("Ended training");
             stochasticGradientDescent.Train(neuralNetwork, trainingData);
         }
 
