@@ -133,7 +133,8 @@ namespace NeuralNetworks.Training
             for (int i = 0; i < neuronsGradients[outputLayerIndex].Length; i++)
             {
                 var expectedOutput = expectedOutputs[i];
-                var gradient = _costFunction.CostDerivative(neuronsOutputs[outputLayerIndex][i], expectedOutput) * _activationFunction.ActivationDerivative(neuronsBiases[outputLayerIndex][i] + neuronsInputs[outputLayerIndex][i]);
+                var activationDerivative = _activationFunction.ActivationDerivative(neuronsBiases[outputLayerIndex][i] + neuronsInputs[outputLayerIndex][i]);
+                var gradient = _costFunction.CostDerivative(neuronsOutputs[outputLayerIndex][i], expectedOutput, activationDerivative);
                 neuronsGradients[outputLayerIndex][i] += gradient;
             }
 

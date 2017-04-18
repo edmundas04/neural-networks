@@ -42,6 +42,7 @@
   <ItemGroup>
     <Compile Include="ActivationFunctions\IActivationFunction.cs" />
     <Compile Include="ActivationFunctions\Sigmoid.cs" />
+    <Compile Include="CostFunctions\CrossEntropy.cs" />
     <Compile Include="CostFunctions\ICostFunction.cs" />
     <Compile Include="CostFunctions\Quadratic.cs" />
     <Compile Include="Extensions\ArrayExtensions.cs" />

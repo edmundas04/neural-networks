@@ -2,16 +2,16 @@
 
 namespace NeuralNetworks.CostFunctions
 {
-    public class Quadratic : ICostFunction
+    public class CrossEntropy : ICostFunction
     {
         public double Cost(double output, double expectedOutput)
         {
-            return Math.Pow(output - expectedOutput, 2) / 2D;
+            return (-expectedOutput * Math.Log(output) - (1 - expectedOutput) * Math.Log(1 - output));
         }
 
         public double CostDerivative(double output, double expectedOutput, double activationDerivative)
         {
-            return (output - expectedOutput) * activationDerivative;
+            return output - expectedOutput;
         }
     }
 }

@@ -21,9 +21,9 @@ namespace NeuralNetworks.ConsoleSamples.Examples
             Console.WriteLine("Loading training data");
             var trainingData = TrainingDataLoader.Load("NeuralNetworks.ConsoleSamples.Resources.digits-image-training-set.json");
             Console.WriteLine("Started training");
-            var stochasticGradientDescent = new StochasticGradientDescent(new Sigmoid(), new Quadratic(), 2, 20, 3D);
-            Console.WriteLine("Ended training");
+            var stochasticGradientDescent = new StochasticGradientDescent(new Sigmoid(), new CrossEntropy(), 2, 20, 1D);
             stochasticGradientDescent.Train(neuralNetwork, trainingData);
+            Console.WriteLine("Ended training");
         }
 
         public void DisplayEvaluation(NeuralNetworkDto dto)
