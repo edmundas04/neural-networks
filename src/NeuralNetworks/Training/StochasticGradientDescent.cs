@@ -1,4 +1,5 @@
 ﻿using NeuralNetworks.ActivationFunctions;
+using NeuralNetworks.CostFunctions;
 using NeuralNetworks.Extensions;
 using System;
 using System.Collections.Generic;
@@ -9,13 +10,15 @@ namespace NeuralNetworks.Training
     public class StochasticGradientDescent : ITrainer
     {
         private readonly IActivationFunction _activationFunction;
+        private readonly ICostFunction _costFunction;
         private readonly int _epochs;
         private readonly int _trainingBatchSize;
         private readonly double _learningRate;
 
-        public StochasticGradientDescent(IActivationFunction activationFunction, int epochs, int trainingBatchSize, double learningRate)
+        public StochasticGradientDescent(IActivationFunction activationFunction, ICostFunction costFunction, int epochs, int trainingBatchSize, double learningRate)
         {
             _activationFunction = activationFunction;
+            _costFunction = costFunction;
             _epochs = epochs;
             _trainingBatchSize = trainingBatchSize;
             _learningRate = learningRate;
@@ -55,8 +58,6 @@ namespace NeuralNetworks.Training
                 }
                 skip = 0;
             }
-
-
 
             for (int i = 0; i < neuronsBiases.Length; i++)
             {
@@ -132,7 +133,7 @@ namespace NeuralNetworks.Training
             for (int i = 0; i < neuronsGradients[outputLayerIndex].Length; i++)
             {
                 var expectedOutput = expectedOutputs[i];
-                var gradient = (neuronsOutputs[outputLayerIndex][i] - expectedOutput) * _activationFunction.ActivationDerivative(neuronsBiases[outputLayerIndex][i] + neuronsInputs[outputLayerIndex][i]);
+                var gradient = _costFunction.CostDerivative(neuronsOutputs[outputLayerIndex][i], expectedOutput) * _activationFunction.ActivationDerivative(neuronsBiases[outputLayerIndex][i] + neuronsInputs[outputLayerIndex][i]);
                 neuronsGradients[outputLayerIndex][i] += gradient;
             }
 

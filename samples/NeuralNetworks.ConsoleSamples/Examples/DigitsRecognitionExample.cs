@@ -1,5 +1,6 @@
 ﻿using NeuralNetworks.ActivationFunctions;
 using NeuralNetworks.ConsoleSamples.Helpers;
+using NeuralNetworks.CostFunctions;
 using NeuralNetworks.Training;
 using System;
 using System.Collections.Generic;
@@ -18,7 +19,7 @@ namespace NeuralNetworks.ConsoleSamples.Examples
         public void Train(NeuralNetworkDto neuralNetwork)
         {
             var trainingData = TrainingDataLoader.Load("NeuralNetworks.ConsoleSamples.Resources.digits-image-training-set.json");
-            var stochasticGradientDescent = new StochasticGradientDescent(new Sigmoid(), 2, 20, 3D);
+            var stochasticGradientDescent = new StochasticGradientDescent(new Sigmoid(), new Quadratic(), 2, 20, 3D);
             stochasticGradientDescent.Train(neuralNetwork, trainingData);
         }
 

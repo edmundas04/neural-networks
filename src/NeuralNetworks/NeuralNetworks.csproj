@@ -42,12 +42,14 @@
   <ItemGroup>
     <Compile Include="ActivationFunctions\IActivationFunction.cs" />
     <Compile Include="ActivationFunctions\Sigmoid.cs" />
+    <Compile Include="CostFunctions\ICostFunction.cs" />
+    <Compile Include="CostFunctions\Quadratic.cs" />
     <Compile Include="Extensions\ArrayExtensions.cs" />
     <Compile Include="Extensions\ListExtensions.cs" />
     <Compile Include="Extensions\NeuralNetworkDtoExtensions.cs" />
     <Compile Include="INeuralNetwork.cs" />
     <Compile Include="NeuralNetwork.cs" />
-    <Compile Include="NeuralNetworkDtoNew.cs" />
+    <Compile Include="NeuralNetworkDto.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Training\Gradients.cs" />
     <Compile Include="Training\ITrainer.cs" />
