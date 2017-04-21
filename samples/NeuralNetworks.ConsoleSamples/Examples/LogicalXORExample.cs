@@ -9,20 +9,16 @@ namespace NeuralNetworks.ConsoleSamples.Examples
 {
     public class LogicalXORExample : IExample
     {
-        public NeuralNetworkDto CreateNeuralNetwork()
-        {
-            var result = NeuralNetworkDtoBuilder.Build(new List<int> { 2, 3, 1 }, ActivationFunctionType.Sigmoid);
-            NeuralNetworkRandomiser.Randomise(result, 1D);
-            return result;
-        }
 
-        /// <summary>
-        /// In this example neural network is trained to perform logical XOR operation.
-        /// </summary>
-        /// <returns></returns>
-        public void Train(NeuralNetworkDto dto)
+        public void Run()
         {
-            var stochasticGradientDescent = new StochasticGradientDescent(new Sigmoid(), new CrossEntropy(),  3000, 4, 5D);
+            var neuralNetworkDto = NeuralNetworkDtoBuilder.Build(new List<int> { 2, 3, 1 }, ActivationFunctionType.Sigmoid);
+            NeuralNetworkRandomiser.Randomise(neuralNetworkDto, 1D);
+
+            Console.WriteLine("Evaluationg untrained neural network");
+            DisplayEvaluation(neuralNetworkDto);
+
+            var stochasticGradientDescent = new StochasticGradientDescent(new Sigmoid(), new CrossEntropy(), 3000, 4, 5D);
             var trainingData = new List<TrainingElement>
             {
                 new TrainingElement
@@ -46,13 +42,16 @@ namespace NeuralNetworks.ConsoleSamples.Examples
                     ExpectedOutputs = new double[] { 0D }
                 }
             };
-            
-            stochasticGradientDescent.Train(dto, trainingData);
+
+            stochasticGradientDescent.Train(neuralNetworkDto, trainingData);
+
+            Console.WriteLine("Evaluationg trained neural network");
+            DisplayEvaluation(neuralNetworkDto);
         }
 
-        public  void DisplayEvaluation(NeuralNetworkDto dto)
+        private void DisplayEvaluation(NeuralNetworkDto neuralNetworkDto)
         {
-            var neuralNetwork = new NeuralNetwork(dto);
+            var neuralNetwork = new NeuralNetwork(neuralNetworkDto);
             var output1 = neuralNetwork.Run(new double[] { 0D, 0D })[0].ToString("N10");
             var output2 = neuralNetwork.Run(new double[] { 1D, 0D })[0].ToString("N10");
             var output3 = neuralNetwork.Run(new double[] { 0D, 1D })[0].ToString("N10");
@@ -63,5 +62,7 @@ namespace NeuralNetworks.ConsoleSamples.Examples
             Console.WriteLine($"Input: 1;1   Output: {output4}   Expected output: 0");
             Console.WriteLine();
         }
+
+        
     }
 }

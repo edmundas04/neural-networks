@@ -21,26 +21,16 @@ namespace NeuralNetworks.ConsoleSamples
             switch (exampleNumber)
             {
                 case "1":
-                    RunExample(new LogicalXORExample());
+                    new LogicalXORExample().Run();
                     break;
                 case "2":
-                    RunExample(new DigitsRecognitionExample());
+                    new DigitsRecognitionExample(30).Run();
                     break;
                 default:
                     throw new ArgumentException("This menu number does not exists");
             }
 
             Console.Read();
-        }
-
-        private static void RunExample(IExample example)
-        {
-            var neuralNetwork = example.CreateNeuralNetwork();
-            Console.WriteLine("Before training");
-            example.DisplayEvaluation(neuralNetwork);
-            example.Train(neuralNetwork);
-            Console.WriteLine("After training");
-            example.DisplayEvaluation(neuralNetwork);
         }
     }
 }

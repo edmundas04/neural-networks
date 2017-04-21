@@ -1,6 +1,7 @@
 ﻿using NeuralNetworks.ActivationFunctions;
 using NeuralNetworks.ConsoleSamples.Helpers;
 using NeuralNetworks.CostFunctions;
+using NeuralNetworks.Diagnostics;
 using NeuralNetworks.Training;
 using System;
 using System.Collections.Generic;
@@ -11,59 +12,45 @@ namespace NeuralNetworks.ConsoleSamples.Examples
     {
         private readonly List<TrainingElement> _trainingData;
         private readonly List<TrainingElement> _validationData;
+        private readonly int _epochs;
 
-        public DigitsRecognitionExample()
+        public DigitsRecognitionExample(int epochs)
         {
+            Console.WriteLine("Initializing data");
             _trainingData = TrainingDataLoader.Load("NeuralNetworks.ConsoleSamples.Resources.digits-image-training-set.json");
             _validationData = TrainingDataLoader.Load("NeuralNetworks.ConsoleSamples.Resources.digits-image-validation-set.json");
+            _epochs = epochs;
         }
 
-        public NeuralNetworkDto CreateNeuralNetwork()
+        public void Run()
         {
-            var result = NeuralNetworkDtoBuilder.Build(new List<int> { 784, 30, 10 }, ActivationFunctionType.Sigmoid);
-            NeuralNetworkRandomiser.Randomise(result, 1D);
-            return result;
-        }
-        
-        public void Train(NeuralNetworkDto neuralNetwork)
-        {
-            var stochasticGradientDescent = new StochasticGradientDescent(new Sigmoid(), new CrossEntropy(), 2, 20, 1D);
-            stochasticGradientDescent.Train(neuralNetwork, _trainingData);
-        }
+            Console.WriteLine("Building random neural network");
+            var neuralNetworkDto = NeuralNetworkDtoBuilder.Build(new List<int> { 784, 30, 10 }, ActivationFunctionType.Sigmoid);
+            NeuralNetworkRandomiser.Randomise(neuralNetworkDto, 1D);
 
-        public void DisplayEvaluation(NeuralNetworkDto dto)
-        {
-            var neuralNetwork = new NeuralNetwork(dto);
+            Console.WriteLine("Evaluating untrained neural network");
+            var untrainedAccuracy = TrainingDiagnostics.GetAccuracyByMax(_validationData, neuralNetworkDto);
+            Console.WriteLine($"Untrained network accuracy: {untrainedAccuracy}");
+                        
+            var stochasticGradientDescent = new StochasticGradientDescent(new Sigmoid(), new CrossEntropy(), 1, 20, 1D);
 
-            var correctCount = 0;
+            var maxAccuracy = 0D;
 
-            foreach (var validationItem in _validationData)
+            for (int i = 0; i < _epochs; i++)
             {
-                var output = neuralNetwork.Run(validationItem.Inputs);
-                if (CheckOutput(output, validationItem.ExpectedOutputs))
+                Console.WriteLine($"Epoch {i + 1} started");
+                var trainingLength = TrainingDiagnostics.GetTrainingLength(stochasticGradientDescent, neuralNetworkDto, _trainingData);
+                var trainingAccuracy = TrainingDiagnostics.GetAccuracyByMax(_validationData, neuralNetworkDto);
+                Console.WriteLine($"Results after epoch {i + 1}:");
+                Console.WriteLine($"Training length in miliseconds: {trainingLength}, Accuracy: {trainingAccuracy.ToString("N2")}");
+
+                if(maxAccuracy < trainingAccuracy)
                 {
-                    correctCount++;
+                    maxAccuracy = trainingAccuracy;
                 }
             }
 
-            Console.WriteLine($"Correctly recognized {correctCount} digits out of {_validationData.Count}");
-        }
-
-        public bool CheckOutput(double[] output, double[] expectedOutput)
-        {
-            var maxIndex = 0;
-            var maxValue = output[0];
-
-            for (int i = 1; i < output.Length; i++)
-            {
-                if(output[i] > maxValue)
-                {
-                    maxValue = output[i];
-                    maxIndex = i;
-                }
-            }
-
-            return expectedOutput[maxIndex] == 1D;
+            Console.WriteLine($"End of training. Best accuracy {maxAccuracy}");
         }
     }
 }
