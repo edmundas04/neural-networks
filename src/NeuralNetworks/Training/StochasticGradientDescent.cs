@@ -17,6 +17,21 @@ namespace NeuralNetworks.Training
 
         public StochasticGradientDescent(IActivationFunction activationFunction, ICostFunction costFunction, int epochs, int trainingBatchSize, double learningRate)
         {
+            if(learningRate <= 0)
+            {
+                throw new ArgumentException("learningRate must be greater than zero");
+            }
+
+            if(trainingBatchSize <= 0)
+            {
+                throw new ArgumentException("trainingBatchSize must be greater than zero");
+            }
+
+            if (epochs <= 0)
+            {
+                throw new ArgumentException("epochs ust be greater than zero");
+            }
+
             _activationFunction = activationFunction;
             _costFunction = costFunction;
             _epochs = epochs;
@@ -94,16 +109,16 @@ namespace NeuralNetworks.Training
                 neuronGradients.Sum(backpropagationResult);
             }
 
+            var learningRate = (_learningRate / _trainingBatchSize);
+
             for (int i = 0; i < neuronsBiases.Length; i++)
             {
                 for (int j = 0; j < neuronsBiases[i].Length; j++)
                 {
-                    neuronsBiases[i][j] -= (_learningRate / _trainingBatchSize) * neuronGradients[i][j];
+                    neuronsBiases[i][j] -= learningRate * neuronGradients[i][j];
                 }
             }
-
-
-            var learningRate = (_learningRate / _trainingBatchSize);
+            
             for (int i = 0; i < synapsesWeights.Length; i++)
             {
                 var layerSynapsesWeights = synapsesWeights[i];
