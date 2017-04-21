@@ -9,6 +9,15 @@ namespace NeuralNetworks.ConsoleSamples.Examples
 {
     public class DigitsRecognitionExample : IExample
     {
+        private readonly List<TrainingElement> _trainingData;
+        private readonly List<TrainingElement> _validationData;
+
+        public DigitsRecognitionExample()
+        {
+            _trainingData = TrainingDataLoader.Load("NeuralNetworks.ConsoleSamples.Resources.digits-image-training-set.json");
+            _validationData = TrainingDataLoader.Load("NeuralNetworks.ConsoleSamples.Resources.digits-image-validation-set.json");
+        }
+
         public NeuralNetworkDto CreateNeuralNetwork()
         {
             var result = NeuralNetworkDtoBuilder.Build(new List<int> { 784, 30, 10 }, ActivationFunctionType.Sigmoid);
@@ -18,22 +27,17 @@ namespace NeuralNetworks.ConsoleSamples.Examples
         
         public void Train(NeuralNetworkDto neuralNetwork)
         {
-            Console.WriteLine("Loading training data");
-            var trainingData = TrainingDataLoader.Load("NeuralNetworks.ConsoleSamples.Resources.digits-image-training-set.json");
-            Console.WriteLine("Started training");
             var stochasticGradientDescent = new StochasticGradientDescent(new Sigmoid(), new CrossEntropy(), 2, 20, 1D);
-            stochasticGradientDescent.Train(neuralNetwork, trainingData);
-            Console.WriteLine("Ended training");
+            stochasticGradientDescent.Train(neuralNetwork, _trainingData);
         }
 
         public void DisplayEvaluation(NeuralNetworkDto dto)
         {
-            var validationData = TrainingDataLoader.Load("NeuralNetworks.ConsoleSamples.Resources.digits-image-validation-set.json");
             var neuralNetwork = new NeuralNetwork(dto);
 
             var correctCount = 0;
 
-            foreach (var validationItem in validationData)
+            foreach (var validationItem in _validationData)
             {
                 var output = neuralNetwork.Run(validationItem.Inputs);
                 if (CheckOutput(output, validationItem.ExpectedOutputs))
@@ -42,7 +46,7 @@ namespace NeuralNetworks.ConsoleSamples.Examples
                 }
             }
 
-            Console.WriteLine($"Correctly recognized {correctCount} digits out of {validationData.Count}");
+            Console.WriteLine($"Correctly recognized {correctCount} digits out of {_validationData.Count}");
         }
 
         public bool CheckOutput(double[] output, double[] expectedOutput)
