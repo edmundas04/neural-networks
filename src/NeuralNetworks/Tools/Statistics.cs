@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 
-namespace NeuralNetworks.ConsoleSamples.Helpers
+namespace NeuralNetworks.Tools
 {
-    public static class StatsCalculator
+    public static class Statistics
     {
         public static long GetTrainingLength(ITrainer trainer, NeuralNetworkDto neuralNetworkDto, List<TrainingElement> trainingData)
         {

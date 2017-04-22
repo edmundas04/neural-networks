@@ -48,9 +48,6 @@
     <Compile Include="Examples\DigitsRecognitionExample.cs" />
     <Compile Include="Examples\IExample.cs" />
     <Compile Include="Examples\LogicalXORExample.cs" />
-    <Compile Include="Helpers\NeuralNetworkDtoBuilder.cs" />
-    <Compile Include="Helpers\NeuralNetworkRandomiser.cs" />
-    <Compile Include="Helpers\StatsCalculator.cs" />
     <Compile Include="Helpers\TrainingDataLoader.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -52,6 +52,9 @@
     <Compile Include="NeuralNetwork.cs" />
     <Compile Include="NeuralNetworkDto.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Tools\Builder.cs" />
+    <Compile Include="Tools\Randomiser.cs" />
+    <Compile Include="Tools\Statistics.cs" />
     <Compile Include="Training\Gradients.cs" />
     <Compile Include="Training\ITrainer.cs" />
     <Compile Include="Training\StochasticGradientDescent.cs" />

@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace NeuralNetworks.ConsoleSamples.Helpers
+namespace NeuralNetworks.Tools
 {
-    public static class NeuralNetworkDtoBuilder
+    public static class Builder
     {
         public static NeuralNetworkDto Build(List<int> neuronsInLayerCounts, ActivationFunctionType activationFunctionType)
         {

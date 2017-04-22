@@ -1,6 +1,6 @@
 ﻿using NeuralNetworks.ActivationFunctions;
-using NeuralNetworks.ConsoleSamples.Helpers;
 using NeuralNetworks.CostFunctions;
+using NeuralNetworks.Tools;
 using NeuralNetworks.Training;
 using System;
 using System.Collections.Generic;
@@ -12,8 +12,8 @@ namespace NeuralNetworks.ConsoleSamples.Examples
 
         public void Run()
         {
-            var neuralNetworkDto = NeuralNetworkDtoBuilder.Build(new List<int> { 2, 3, 1 }, ActivationFunctionType.Sigmoid);
-            NeuralNetworkRandomiser.Randomise(neuralNetworkDto, 1D);
+            var neuralNetworkDto = Builder.Build(new List<int> { 2, 3, 1 }, ActivationFunctionType.Sigmoid);
+            Randomiser.Randomise(neuralNetworkDto, 1D);
 
             Console.WriteLine("Evaluationg untrained neural network");
             DisplayEvaluation(neuralNetworkDto);

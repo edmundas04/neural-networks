@@ -1,6 +1,7 @@
 ﻿using NeuralNetworks.ActivationFunctions;
 using NeuralNetworks.ConsoleSamples.Helpers;
 using NeuralNetworks.CostFunctions;
+using NeuralNetworks.Tools;
 using NeuralNetworks.Training;
 using System;
 using System.Collections.Generic;
@@ -24,12 +25,12 @@ namespace NeuralNetworks.ConsoleSamples.Examples
         public void Run()
         {
             Console.WriteLine("Building random neural network");
-            var neuralNetworkDto = NeuralNetworkDtoBuilder.Build(new List<int> { 784, 30, 10 }, ActivationFunctionType.Sigmoid);
-            NeuralNetworkRandomiser.Randomise(neuralNetworkDto, 1D);
+            var neuralNetworkDto = Builder.Build(new List<int> { 784, 30, 10 }, ActivationFunctionType.Sigmoid);
+            Randomiser.Randomise(neuralNetworkDto, 1D);
 
             Console.WriteLine("Evaluating untrained neural network");
-            var untrainedAccuracy = StatsCalculator.GetAccuracyByMax(_validationData, neuralNetworkDto);
-            Console.WriteLine($"Untrained network accuracy: {untrainedAccuracy}");
+            var untrainedAccuracy = Statistics.GetAccuracyByMax(_validationData, neuralNetworkDto);
+            Console.WriteLine($"Untrained network accuracy: {untrainedAccuracy.ToString("N2")}%");
                         
             var stochasticGradientDescent = new StochasticGradientDescent(new Sigmoid(), new CrossEntropy(), 1, 20, 1D);
 
@@ -38,10 +39,10 @@ namespace NeuralNetworks.ConsoleSamples.Examples
             for (int i = 0; i < _epochs; i++)
             {
                 Console.WriteLine($"Epoch {i + 1} started");
-                var trainingLength = StatsCalculator.GetTrainingLength(stochasticGradientDescent, neuralNetworkDto, _trainingData);
-                var trainingAccuracy = StatsCalculator.GetAccuracyByMax(_validationData, neuralNetworkDto);
+                var trainingLength = Statistics.GetTrainingLength(stochasticGradientDescent, neuralNetworkDto, _trainingData);
+                var trainingAccuracy = Statistics.GetAccuracyByMax(_validationData, neuralNetworkDto);
                 Console.WriteLine($"Results after epoch {i + 1}:");
-                Console.WriteLine($"Training length in miliseconds: {trainingLength}, Accuracy: {trainingAccuracy.ToString("N2")}");
+                Console.WriteLine($"Training length in miliseconds: {trainingLength}, Accuracy: {trainingAccuracy.ToString("N2")}%");
 
                 if(maxAccuracy < trainingAccuracy)
                 {
@@ -49,7 +50,7 @@ namespace NeuralNetworks.ConsoleSamples.Examples
                 }
             }
 
-            Console.WriteLine($"End of training. Best accuracy {maxAccuracy}");
+            Console.WriteLine($"End of training. Best accuracy {maxAccuracy.ToString("N2")}%");
         }
     }
 }
