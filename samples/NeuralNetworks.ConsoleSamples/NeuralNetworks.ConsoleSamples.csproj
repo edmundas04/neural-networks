@@ -45,9 +45,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Examples\DigitsRecognitionCompareExample.cs" />
     <Compile Include="Examples\DigitsRecognitionExample.cs" />
     <Compile Include="Examples\IExample.cs" />
     <Compile Include="Examples\LogicalXORExample.cs" />
+    <Compile Include="Extensions\NeuralNetworkDtoExtensions.cs" />
+    <Compile Include="Helpers\TrainersComparer.cs" />
     <Compile Include="Helpers\TrainingDataLoader.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -64,8 +67,6 @@
       <Name>NeuralNetworks</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Reporting\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

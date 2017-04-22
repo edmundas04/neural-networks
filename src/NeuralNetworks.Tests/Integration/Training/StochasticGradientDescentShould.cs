@@ -6,9 +6,6 @@ using NeuralNetworks.Tools;
 using NeuralNetworks.Training;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace NeuralNetworks.Tests.Integration.Training
 {
