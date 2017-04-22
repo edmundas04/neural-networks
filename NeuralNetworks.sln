@@ -7,7 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NeuralNetworks", "src\Neura
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NeuralNetworks.ConsoleSamples", "samples\NeuralNetworks.ConsoleSamples\NeuralNetworks.ConsoleSamples.csproj", "{9953CBCA-A193-453B-BD3F-13F0DB20FBC1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NeuralNetworks.Tests", "src\NeuralNetworks.IntegrationTests\NeuralNetworks.Tests.csproj", "{C14175DB-3C21-476D-B9F7-1CFF6ECAEAD0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NeuralNetworks.Tests", "src\NeuralNetworks.Tests\NeuralNetworks.Tests.csproj", "{C14175DB-3C21-476D-B9F7-1CFF6ECAEAD0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
