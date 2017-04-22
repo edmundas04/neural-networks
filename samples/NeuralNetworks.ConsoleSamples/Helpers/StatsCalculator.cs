@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 
-namespace NeuralNetworks.Diagnostics
+namespace NeuralNetworks.ConsoleSamples.Helpers
 {
-    public static class TrainingDiagnostics
+    public static class StatsCalculator
     {
         public static long GetTrainingLength(ITrainer trainer, NeuralNetworkDto neuralNetworkDto, List<TrainingElement> trainingData)
         {
@@ -64,14 +64,14 @@ namespace NeuralNetworks.Diagnostics
                 for (int j = 0; j < outputs.Length; j++)
                 {
                     var outputValue = outputs[j] < 0.5D ? 0 : 1;
-                    if(outputValue != validationElement.ExpectedOutputs[j])
+                    if (outputValue != validationElement.ExpectedOutputs[j])
                     {
                         isCorrect = false;
                         break;
                     }
                 }
 
-                if(isCorrect)
+                if (isCorrect)
                 {
                     correctCount++;
                 }
