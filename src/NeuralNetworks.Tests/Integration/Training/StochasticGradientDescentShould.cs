@@ -19,7 +19,7 @@ namespace NeuralNetworks.Tests.Integration.Training
         public void Initialize()
         {
             _logicalXORneuralNetworkDto = Builder.Build(new List<int> { 2, 3, 1 }, ActivationFunctionType.Sigmoid);
-            Randomiser.Randomise(_logicalXORneuralNetworkDto, 5D, new Random(5));
+            Randomiser.Randomise(_logicalXORneuralNetworkDto, new Random(5));
             _trainingData = new List<TrainingElement>
             {
                 new TrainingElement
@@ -48,49 +48,49 @@ namespace NeuralNetworks.Tests.Integration.Training
         [TestMethod]
         public void ShouldTrainUsingQuadraticCostFunction()
         {
-            var stochasticGradientDescent = new StochasticGradientDescent(new Sigmoid(), new Quadratic(), 1000, 4, 5D);
+            var stochasticGradientDescent = new StochasticGradientDescent(new Sigmoid(), new Quadratic(), 3000, 4, 5D);
             stochasticGradientDescent.Train(_logicalXORneuralNetworkDto, _trainingData);
 
             var neuralNetwork = new NeuralNetwork(_logicalXORneuralNetworkDto);
             var result1 = neuralNetwork.Run(_trainingData[0].Inputs);
             result1.Should().HaveCount(1);
-            Math.Round(result1[0], 8).Should().Be(0.97302816D);
+            Math.Round(result1[0], 10).Should().Be(0.0245579310D);
 
             var result2 = neuralNetwork.Run(_trainingData[1].Inputs);
             result2.Should().HaveCount(1);
-            Math.Round(result2[0], 8).Should().Be(0.03993539D);
+            Math.Round(result2[0], 10).Should().Be(0.9661695582D);
 
             var result3 = neuralNetwork.Run(_trainingData[2].Inputs);
             result3.Should().HaveCount(1);
-            Math.Round(result3[0], 8).Should().Be(0.94297169D);
+            Math.Round(result3[0], 10).Should().Be(0.9852113647D);
 
             var result4 = neuralNetwork.Run(_trainingData[3].Inputs);
             result4.Should().HaveCount(1);
-            Math.Round(result4[0], 8).Should().Be(0.05742208D);
+            Math.Round(result4[0], 10).Should().Be(0.0320611480D);
         }
 
         [TestMethod]
         public void ShouldTrainUsingCrossEntropyCostFunction()
         {
-            var stochasticGradientDescent = new StochasticGradientDescent(new Sigmoid(), new CrossEntropy(), 1000, 4, 5D);
+            var stochasticGradientDescent = new StochasticGradientDescent(new Sigmoid(), new CrossEntropy(), 3000, 4, 5D);
             stochasticGradientDescent.Train(_logicalXORneuralNetworkDto, _trainingData);
 
             var neuralNetwork = new NeuralNetwork(_logicalXORneuralNetworkDto);
             var result1 = neuralNetwork.Run(_trainingData[0].Inputs);
             result1.Should().HaveCount(1);
-            Math.Round(result1[0], 8).Should().Be(0.99918666D);
+            Math.Round(result1[0], 10).Should().Be(0.0005468953D);
 
             var result2 = neuralNetwork.Run(_trainingData[1].Inputs);
             result2.Should().HaveCount(1);
-            Math.Round(result2[0], 8).Should().Be(0.00165418D);
+            Math.Round(result2[0], 10).Should().Be(0.9993728892D);
 
             var result3 = neuralNetwork.Run(_trainingData[2].Inputs);
             result3.Should().HaveCount(1);
-            Math.Round(result3[0], 8).Should().Be(0.99730866D);
+            Math.Round(result3[0], 10).Should().Be(0.9994636693D);
 
             var result4 = neuralNetwork.Run(_trainingData[3].Inputs);
             result4.Should().HaveCount(1);
-            Math.Round(result4[0], 8).Should().Be(0.00267386D);
+            Math.Round(result4[0], 10).Should().Be(0.0008765251D);
         }
     }
 }

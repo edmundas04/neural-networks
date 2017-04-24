@@ -13,7 +13,7 @@ namespace NeuralNetworks.ConsoleSamples.Examples
         public void Run()
         {
             var neuralNetworkDto = Builder.Build(new List<int> { 2, 3, 1 }, ActivationFunctionType.Sigmoid);
-            Randomiser.Randomise(neuralNetworkDto, 1D);
+            Randomiser.Randomise(neuralNetworkDto);
 
             Console.WriteLine("Evaluationg untrained neural network");
             DisplayEvaluation(neuralNetworkDto);

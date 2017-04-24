@@ -26,7 +26,7 @@ namespace NeuralNetworks.ConsoleSamples.Examples
         {
             Console.WriteLine("Building random neural network");
             var neuralNetworkDto = Builder.Build(new List<int> { 784, 30, 10 }, ActivationFunctionType.Sigmoid);
-            Randomiser.Randomise(neuralNetworkDto, 1D);
+            Randomiser.Randomise(neuralNetworkDto);
 
             Console.WriteLine("Evaluating untrained neural network");
             var untrainedAccuracy = Statistics.GetAccuracyByMax(_validationData, neuralNetworkDto);

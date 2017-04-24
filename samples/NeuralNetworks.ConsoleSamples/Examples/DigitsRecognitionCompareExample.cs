@@ -25,7 +25,7 @@ namespace NeuralNetworks.ConsoleSamples.Examples
         public void Run()
         {
             var neuralNetworkDto = Builder.Build(new List<int> { 784, 30, 10 }, ActivationFunctionType.Sigmoid);
-            Randomiser.Randomise(neuralNetworkDto, 1D);
+            Randomiser.Randomise(neuralNetworkDto);
 
             
             var trainersToCompare = new List<ITrainer>
