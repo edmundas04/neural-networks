@@ -167,15 +167,16 @@ namespace NeuralNetworks.Training
                 var primaryNeuronsCount = neuronsInputs[i - 1].Length;
                 var targetNeuronsCount = neuronsInputs[i].Length;
 
-                synapseIndex = 0;
+                synapseIndex = primaryNeuronsCount * targetNeuronsCount - 1;
 
-                for (int j = 0; j < primaryNeuronsCount; j++)
+                for (int j = primaryNeuronsCount - 1; j >= 0; j--)
                 {
-                    for (int k = 0; k < targetNeuronsCount; k++)
+                    for (int k = targetNeuronsCount - 1; k >= 0; k--)
                     {
-                        layerSynapsesGradients[synapseIndex] += layerPrimaryNeuronsOutputs[j] * layerTargetNeuronsGradients[k];
-                        layerPrimaryNeuronsGradients[j] += layerTargetNeuronsGradients[k] * layerSynapsesWeights[synapseIndex];
-                        synapseIndex++;
+                        var targetNeuronGradient = layerTargetNeuronsGradients[k];
+                        layerSynapsesGradients[synapseIndex] += layerPrimaryNeuronsOutputs[j] * targetNeuronGradient;
+                        layerPrimaryNeuronsGradients[j] += targetNeuronGradient * layerSynapsesWeights[synapseIndex];
+                        synapseIndex--;
                     }
                 }
 
@@ -218,14 +219,14 @@ namespace NeuralNetworks.Training
                 var synapses = synapsesWeights[i];
                 var primaryNeuronsCount = primaryNeurons.Length;
                 var targetNeuronsCount = targetNeuronInputs.Length;
-                var synapseIndex = 0;
+                var synapseIndex = primaryNeuronsCount * targetNeuronsCount - 1;
 
-                for (int j = 0; j < primaryNeuronsCount; j++)
+                for (int j = primaryNeuronsCount - 1; j >= 0; j--)
                 {
-                    for (int k = 0; k < targetNeuronsCount; k++)
+                    for (int k = targetNeuronsCount - 1; k >= 0; k--)
                     {
                         targetNeuronInputs[k] += primaryNeurons[j] * synapses[synapseIndex];
-                        synapseIndex++;
+                        synapseIndex--;
                     }
                 }
 

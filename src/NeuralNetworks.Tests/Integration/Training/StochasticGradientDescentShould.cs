@@ -54,19 +54,19 @@ namespace NeuralNetworks.Tests.Integration.Training
             var neuralNetwork = new NeuralNetwork(_logicalXORneuralNetworkDto);
             var result1 = neuralNetwork.Run(_trainingData[0].Inputs);
             result1.Should().HaveCount(1);
-            result1[0].Should().Be(0.97302815819753175D);
+            Math.Round(result1[0], 8).Should().Be(0.97302816D);
 
             var result2 = neuralNetwork.Run(_trainingData[1].Inputs);
             result2.Should().HaveCount(1);
-            result2[0].Should().Be(0.039935388558418453D);
+            Math.Round(result2[0], 8).Should().Be(0.03993539D);
 
             var result3 = neuralNetwork.Run(_trainingData[2].Inputs);
             result3.Should().HaveCount(1);
-            result3[0].Should().Be(0.94297168622448257D);
+            Math.Round(result3[0], 8).Should().Be(0.94297169D);
 
             var result4 = neuralNetwork.Run(_trainingData[3].Inputs);
             result4.Should().HaveCount(1);
-            result4[0].Should().Be(0.057422082340008042D);
+            Math.Round(result4[0], 8).Should().Be(0.05742208D);
         }
 
         [TestMethod]
@@ -78,19 +78,19 @@ namespace NeuralNetworks.Tests.Integration.Training
             var neuralNetwork = new NeuralNetwork(_logicalXORneuralNetworkDto);
             var result1 = neuralNetwork.Run(_trainingData[0].Inputs);
             result1.Should().HaveCount(1);
-            result1[0].Should().Be(0.999186664461933D);
+            Math.Round(result1[0], 8).Should().Be(0.99918666D);
 
             var result2 = neuralNetwork.Run(_trainingData[1].Inputs);
             result2.Should().HaveCount(1);
-            result2[0].Should().Be(0.0016541769597805038D);
+            Math.Round(result2[0], 8).Should().Be(0.00165418D);
 
             var result3 = neuralNetwork.Run(_trainingData[2].Inputs);
             result3.Should().HaveCount(1);
-            result3[0].Should().Be(0.99730866387705452D);
+            Math.Round(result3[0], 8).Should().Be(0.99730866D);
 
             var result4 = neuralNetwork.Run(_trainingData[3].Inputs);
             result4.Should().HaveCount(1);
-            result4[0].Should().Be(0.0026738630799789296D);
+            Math.Round(result4[0], 8).Should().Be(0.00267386D);
         }
     }
 }
