@@ -18,7 +18,7 @@ namespace NeuralNetworks.ConsoleSamples.Examples
             Console.WriteLine("Evaluationg untrained neural network");
             DisplayEvaluation(neuralNetworkDto);
 
-            var stochasticGradientDescent = new StochasticGradientDescent(new Sigmoid(), new CrossEntropy(), 3000, 4, 5D);
+            var stochasticGradientDescent = new StochasticGradientDescent(new Sigmoid(), new CrossEntropy(), 3000, 4, 5D, 0D);
             var trainingData = new List<TrainingElement>
             {
                 new TrainingElement

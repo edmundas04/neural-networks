@@ -32,7 +32,7 @@ namespace NeuralNetworks.ConsoleSamples.Examples
             var untrainedAccuracy = Statistics.GetAccuracyByMax(_validationData, neuralNetworkDto);
             Console.WriteLine($"Untrained network accuracy: {untrainedAccuracy.ToString("N2")}%");
                         
-            var stochasticGradientDescent = new StochasticGradientDescent(new Sigmoid(), new CrossEntropy(), 1, 20, 1D);
+            var stochasticGradientDescent = new StochasticGradientDescent(new Sigmoid(), new CrossEntropy(), 1, 20, 1D, 0D);
 
             var maxAccuracy = 0D;
 

@@ -30,12 +30,12 @@ namespace NeuralNetworks.ConsoleSamples.Examples
             
             var trainersToCompare = new List<ITrainer>
             {
-                new StochasticGradientDescent(new Sigmoid(), new Quadratic(), _epochs, 10, 1D),
-                new StochasticGradientDescent(new Sigmoid(), new Quadratic(), _epochs, 20, 1D),
-                new StochasticGradientDescent(new Sigmoid(), new Quadratic(), _epochs, 20, 1D),
-                new StochasticGradientDescent(new Sigmoid(), new CrossEntropy(), _epochs, 10, 1D),
-                new StochasticGradientDescent(new Sigmoid(), new CrossEntropy(), _epochs, 20, 1D),
-                new StochasticGradientDescent(new Sigmoid(), new CrossEntropy(), _epochs, 30, 1D)
+                new StochasticGradientDescent(new Sigmoid(), new Quadratic(), _epochs, 10, 1D, 0),
+                new StochasticGradientDescent(new Sigmoid(), new Quadratic(), _epochs, 20, 1D, 0),
+                new StochasticGradientDescent(new Sigmoid(), new Quadratic(), _epochs, 20, 1D, 0),
+                new StochasticGradientDescent(new Sigmoid(), new CrossEntropy(), _epochs, 10, 1D, 0),
+                new StochasticGradientDescent(new Sigmoid(), new CrossEntropy(), _epochs, 20, 1D, 0),
+                new StochasticGradientDescent(new Sigmoid(), new CrossEntropy(), _epochs, 30, 1D, 0)
             };
 
             Console.WriteLine("Comparison started");

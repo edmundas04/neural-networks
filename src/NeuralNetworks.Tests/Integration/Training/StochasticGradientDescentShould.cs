@@ -48,7 +48,7 @@ namespace NeuralNetworks.Tests.Integration.Training
         [TestMethod]
         public void ShouldTrainUsingQuadraticCostFunction()
         {
-            var stochasticGradientDescent = new StochasticGradientDescent(new Sigmoid(), new Quadratic(), 3000, 4, 5D);
+            var stochasticGradientDescent = new StochasticGradientDescent(new Sigmoid(), new Quadratic(), 3000, 4, 5D, 0);
             stochasticGradientDescent.Train(_logicalXORneuralNetworkDto, _trainingData);
 
             var neuralNetwork = new NeuralNetwork(_logicalXORneuralNetworkDto);
@@ -72,7 +72,7 @@ namespace NeuralNetworks.Tests.Integration.Training
         [TestMethod]
         public void ShouldTrainUsingCrossEntropyCostFunction()
         {
-            var stochasticGradientDescent = new StochasticGradientDescent(new Sigmoid(), new CrossEntropy(), 3000, 4, 5D);
+            var stochasticGradientDescent = new StochasticGradientDescent(new Sigmoid(), new CrossEntropy(), 3000, 4, 5D, 0);
             stochasticGradientDescent.Train(_logicalXORneuralNetworkDto, _trainingData);
 
             var neuralNetwork = new NeuralNetwork(_logicalXORneuralNetworkDto);
@@ -91,6 +91,30 @@ namespace NeuralNetworks.Tests.Integration.Training
             var result4 = neuralNetwork.Run(_trainingData[3].Inputs);
             result4.Should().HaveCount(1);
             Math.Round(result4[0], 10).Should().Be(0.0008765251D);
+        }
+
+        [TestMethod]
+        public void ShouldTrainUsingRegularizationParam()
+        {
+            var stochasticGradientDescent = new StochasticGradientDescent(new Sigmoid(), new CrossEntropy(), 3000, 4, 5D, 0.01D);
+            stochasticGradientDescent.Train(_logicalXORneuralNetworkDto, _trainingData);
+
+            var neuralNetwork = new NeuralNetwork(_logicalXORneuralNetworkDto);
+            var result1 = neuralNetwork.Run(_trainingData[0].Inputs);
+            result1.Should().HaveCount(1);
+            Math.Round(result1[0], 10).Should().Be(0.0285179059D);
+
+            var result2 = neuralNetwork.Run(_trainingData[1].Inputs);
+            result2.Should().HaveCount(1);
+            Math.Round(result2[0], 10).Should().Be(0.9714820792D);
+
+            var result3 = neuralNetwork.Run(_trainingData[2].Inputs);
+            result3.Should().HaveCount(1);
+            Math.Round(result3[0], 10).Should().Be(0.9714820797D);
+
+            var result4 = neuralNetwork.Run(_trainingData[3].Inputs);
+            result4.Should().HaveCount(1);
+            Math.Round(result4[0], 10).Should().Be(0.0285163624D);
         }
     }
 }

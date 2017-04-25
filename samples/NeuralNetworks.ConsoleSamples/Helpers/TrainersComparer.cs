@@ -2,6 +2,7 @@
 using NeuralNetworks.Tools;
 using NeuralNetworks.Training;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace NeuralNetworks.ConsoleSamples.Helpers
 {
@@ -15,7 +16,7 @@ namespace NeuralNetworks.ConsoleSamples.Helpers
             {
                 var compareResult = new CompareResult();
                 var neuralNetworkDtoCopy = neuralNetworkDto.Copy();
-                compareResult.ElapsedTimeInMillisecond = Statistics.GetTrainingLength(trainer, neuralNetworkDtoCopy, trainingData);
+                compareResult.ElapsedTimeInMillisecond = Statistics.GetTrainingLength(trainer, neuralNetworkDtoCopy, trainingData.ToList());
                 compareResult.Accuracy = Statistics.GetAccuracy(validationData, neuralNetworkDtoCopy);
                 compareResult.AccuracyByMax = Statistics.GetAccuracyByMax(validationData, neuralNetworkDtoCopy);
                 result.Add(compareResult);

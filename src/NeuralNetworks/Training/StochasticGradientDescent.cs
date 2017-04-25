@@ -14,22 +14,28 @@ namespace NeuralNetworks.Training
         private readonly int _epochs;
         private readonly int _trainingBatchSize;
         private readonly double _learningRate;
+        private readonly double _regularizationParam;
 
-        public StochasticGradientDescent(IActivationFunction activationFunction, ICostFunction costFunction, int epochs, int trainingBatchSize, double learningRate)
+        public StochasticGradientDescent(IActivationFunction activationFunction, ICostFunction costFunction, int epochs, int trainingBatchSize, double learningRate, double regularizationParam)
         {
-            if(learningRate <= 0)
+            if (learningRate <= 0)
             {
                 throw new ArgumentException("learningRate must be greater than zero");
             }
 
-            if(trainingBatchSize <= 0)
+            if (trainingBatchSize <= 0)
             {
                 throw new ArgumentException("trainingBatchSize must be greater than zero");
             }
 
             if (epochs <= 0)
             {
-                throw new ArgumentException("epochs ust be greater than zero");
+                throw new ArgumentException("epochs must be greater than zero");
+            }
+
+            if (regularizationParam < 0)
+            {
+                throw new ArgumentException("regularizationRate must be greater or equal to zero");
             }
 
             _activationFunction = activationFunction;
@@ -37,6 +43,7 @@ namespace NeuralNetworks.Training
             _epochs = epochs;
             _trainingBatchSize = trainingBatchSize;
             _learningRate = learningRate;
+            _regularizationParam = regularizationParam;
         }
 
         public void Train(NeuralNetworkDto dto, List<TrainingElement> trainingData)
@@ -58,7 +65,7 @@ namespace NeuralNetworks.Training
 
             var skip = 0;
             var epochs = _epochs;
-            
+
             var neuronsBiases = dto.ToBiasesArray();
             var synapsesWeights = dto.ToWeightsArray();
 
@@ -68,7 +75,7 @@ namespace NeuralNetworks.Training
                 while (skip + _trainingBatchSize <= trainingData.Count)
                 {
                     var trainingBatch = trainingData.Skip(skip).Take(_trainingBatchSize).ToList();
-                    PerformGradientDescent(neuronsBiases, synapsesWeights, trainingBatch);
+                    PerformGradientDescent(neuronsBiases, synapsesWeights, trainingData.Count, trainingBatch);
                     skip += _trainingBatchSize;
                 }
                 skip = 0;
@@ -97,7 +104,7 @@ namespace NeuralNetworks.Training
             }
         }
 
-        private void PerformGradientDescent(double[][] neuronsBiases, double[][] synapsesWeights, List<TrainingElement> trainingBatch)
+        private void PerformGradientDescent(double[][] neuronsBiases, double[][] synapsesWeights, double trainingDataSetSize, List<TrainingElement> trainingBatch)
         {
             var neuronGradients = neuronsBiases.CopyWithZeros();
             var synapseGradients = synapsesWeights.CopyWithZeros();
@@ -109,16 +116,18 @@ namespace NeuralNetworks.Training
                 neuronGradients.Sum(backpropagationResult);
             }
 
-            var learningRate = (_learningRate / _trainingBatchSize);
+            var learningRateApproximation = (_learningRate / _trainingBatchSize);
 
             for (int i = 0; i < neuronsBiases.Length; i++)
             {
                 for (int j = 0; j < neuronsBiases[i].Length; j++)
                 {
-                    neuronsBiases[i][j] -= learningRate * neuronGradients[i][j];
+                    neuronsBiases[i][j] -= learningRateApproximation * neuronGradients[i][j];
                 }
             }
-            
+
+            var regulatizationParamApproximation = 1 - (learningRateApproximation * (_regularizationParam / trainingDataSetSize));
+
             for (int i = 0; i < synapsesWeights.Length; i++)
             {
                 var layerSynapsesWeights = synapsesWeights[i];
@@ -128,7 +137,7 @@ namespace NeuralNetworks.Training
 
                 for (int j = 0; j < synapsesLayerCount; j++)
                 {
-                    layerSynapsesWeights[j] -= learningRate * layerSynapsesGradients[j];
+                    layerSynapsesWeights[j] = (regulatizationParamApproximation * layerSynapsesWeights[j]) - (learningRateApproximation * layerSynapsesGradients[j]);
                 }
             }
         }
