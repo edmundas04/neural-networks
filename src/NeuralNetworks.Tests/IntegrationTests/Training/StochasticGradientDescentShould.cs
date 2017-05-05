@@ -7,7 +7,7 @@ using NeuralNetworks.Training;
 using System;
 using System.Collections.Generic;
 
-namespace NeuralNetworks.Tests.Integration.Training
+namespace NeuralNetworks.Tests.IntegrationTests.Training
 {
     [TestClass]
     public class StochasticGradientDescentShould

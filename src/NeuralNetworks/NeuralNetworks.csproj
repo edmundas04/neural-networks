@@ -49,6 +49,8 @@
     <Compile Include="Extensions\ListExtensions.cs" />
     <Compile Include="Extensions\NeuralNetworkDtoExtensions.cs" />
     <Compile Include="INeuralNetwork.cs" />
+    <Compile Include="Layers\FullyConnectedLayer.cs" />
+    <Compile Include="Layers\ILayer.cs" />
     <Compile Include="NeuralNetwork.cs" />
     <Compile Include="NeuralNetworkDto.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
