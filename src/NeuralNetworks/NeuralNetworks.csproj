@@ -45,6 +45,7 @@
     <Compile Include="CostFunctions\CrossEntropy.cs" />
     <Compile Include="CostFunctions\ICostFunction.cs" />
     <Compile Include="CostFunctions\Quadratic.cs" />
+    <Compile Include="Exceptions\NeuralNetworksException.cs" />
     <Compile Include="Extensions\ArrayExtensions.cs" />
     <Compile Include="Extensions\ListExtensions.cs" />
     <Compile Include="Extensions\NeuralNetworkDtoExtensions.cs" />
@@ -53,6 +54,7 @@
     <Compile Include="Layers\ILayer.cs" />
     <Compile Include="NeuralNetwork.cs" />
     <Compile Include="NeuralNetworkDto.cs" />
+    <Compile Include="NeuralNetworkNew.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Tools\Builder.cs" />
     <Compile Include="Tools\Randomiser.cs" />

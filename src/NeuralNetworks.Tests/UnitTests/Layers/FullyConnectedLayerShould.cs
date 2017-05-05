@@ -51,7 +51,7 @@ namespace NeuralNetworks.Tests.UnitTests.Layers
             fullyConnectedLayer.UpdateSynapsesWeights(new double[] { 1, 2, 3, 3, 2, 1, 1, 2, 3 });
 
             var result = fullyConnectedLayer.ProduceActivation(new double[] { 3, 4, 5 });
-            result.Should().HaveCount(3);
+            result.Should().NotBeNull();
             result.Should().ContainInOrder(new double[] { 1, 5, 3 });
             _activationFunction.Received(3).Activate(Arg.Any<double>());
 
