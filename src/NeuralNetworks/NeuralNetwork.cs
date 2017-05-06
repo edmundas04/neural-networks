@@ -26,15 +26,17 @@ namespace NeuralNetworks
                 throw new NeuralNetworksException("Neural network has different count of inputs");
             }
 
-            var outputs = inputs;
+            var activations = inputs;
             var layersCount = _layers.Length;
 
             for (int i = 0; i < layersCount; i++)
             {
-                outputs = _layers[i].ProduceActivation(outputs);
+                var layer = _layers[i];
+                layer.Produce(activations);
+                activations = layer.Activations;
             }
 
-            return outputs;
+            return activations;
         }
     }
 }

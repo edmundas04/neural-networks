@@ -43,12 +43,13 @@ namespace NeuralNetworks.Tests.UnitTests
             var inputs = new double[] { 1, 2, 3, 4 };
             var firstLayerActivation = new double[] { 4, 5, 6, 7 };
             var secondLayerActivation = new double[] { 8, 9, 10, 11 };
+            
+            _firstLayer.Activations.Returns(firstLayerActivation);
+            _secondLayer.Activations.Returns(secondLayerActivation);
 
-            _firstLayer.ProduceActivation(Arg.Any<double[]>()).Returns(firstLayerActivation);
-            _secondLayer.ProduceActivation(Arg.Any<double[]>()).Returns(secondLayerActivation);
             var result = _neuralNetwork.Run(inputs);
-            _firstLayer.Received(1).ProduceActivation(Arg.Is<double[]>(x => x.SequenceEqual(inputs)));
-            _secondLayer.Received(1).ProduceActivation(Arg.Is<double[]>(x => x.SequenceEqual(firstLayerActivation)));
+            _firstLayer.Received(1).Produce(Arg.Is<double[]>(x => x.SequenceEqual(inputs)));
+            _secondLayer.Received(1).Produce(Arg.Is<double[]>(x => x.SequenceEqual(firstLayerActivation)));
 
             result.Should().NotBeNull();
             result.Should().ContainInOrder(secondLayerActivation);

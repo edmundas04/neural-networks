@@ -47,9 +47,7 @@ namespace NeuralNetworks.ConsoleSamples.Extensions
                 var neurons = neuralNetworkDto.NeuronsLayers[i];
                 var synapses = neuralNetworkDto.SynapsesLayers[i];
 
-                var layer = new FullyConnectedLayer(new Sigmoid(), neurons.Count, primaryNeuronsCount);
-                layer.UpdateNeuronsBiases(neurons.Select(s => s.Bias).ToArray());
-                layer.UpdateSynapsesWeights(synapses.Select(s => s.Weight).ToArray());
+                var layer = new FullyConnectedLayer(new Sigmoid(), synapses.Select(s => s.Weight).ToArray(), neurons.Select(s => s.Bias).ToArray());
                 result[i] = layer;
                 primaryNeuronsCount = neurons.Count;
             }

@@ -1,9 +1,15 @@
-﻿namespace NeuralNetworks.Layers
+﻿using NeuralNetworks.ActivationFunctions;
+
+namespace NeuralNetworks.Layers
 {
     public interface ILayer
     {
-        void UpdateSynapsesWeights(double[] newSynapsesWeighs);
-        void UpdateNeuronsBiases(double[] newNeuronsBiases);
-        double[] ProduceActivation(double[] input);
+        IActivationFunction ActivationFunction { get; }
+        double[] Outputs { get; }
+        double[] Activations { get; }
+        double[] SynapsesWeights { get; }
+        double[] NeuronsBiases { get; }
+        
+        void Produce(double[] input);
     }
 }
