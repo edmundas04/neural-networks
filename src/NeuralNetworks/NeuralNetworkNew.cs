@@ -1,10 +1,5 @@
 ﻿using NeuralNetworks.Exceptions;
 using NeuralNetworks.Layers;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace NeuralNetworks
 {
@@ -19,8 +14,6 @@ namespace NeuralNetworks
             {
                 throw new NeuralNetworksException("Neural network must have at least 1 layers");
             }
-
-
 
             _layers = layers;
             _inputNeuronsCount = inputNeuronsCount;
