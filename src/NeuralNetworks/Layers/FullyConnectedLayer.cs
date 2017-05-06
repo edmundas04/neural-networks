@@ -64,10 +64,6 @@ namespace NeuralNetworks.Layers
             {
                 for (int j = 0; j < currentNeuronsCount; j++)
                 {
-                    var aaa = _synapsesWeights[synapseIndex];
-                    var bbb = input[i];
-                    var ccc = _synapsesWeights[synapseIndex] * input[i];
-
                     result[j] += _synapsesWeights[synapseIndex] * input[i];
                     synapseIndex++;
                 }

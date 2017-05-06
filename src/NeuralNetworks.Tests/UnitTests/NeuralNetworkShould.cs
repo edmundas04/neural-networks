@@ -11,7 +11,7 @@ namespace NeuralNetworks.Tests.UnitTests
     [TestClass]
     public class NeuralNetworkShould
     {
-        private NeuralNetworkNew _neuralNetwork;
+        private NeuralNetwork _neuralNetwork;
         private ILayer _firstLayer;
         private ILayer _secondLayer;
 
@@ -20,13 +20,13 @@ namespace NeuralNetworks.Tests.UnitTests
         {
             _firstLayer = Substitute.For<ILayer>();
             _secondLayer = Substitute.For<ILayer>();
-            _neuralNetwork = new NeuralNetworkNew(new ILayer[] { _firstLayer, _secondLayer }, 4);
+            _neuralNetwork = new NeuralNetwork(new ILayer[] { _firstLayer, _secondLayer }, 4);
         }
 
         [TestMethod]
         public void ShouldThrowWhenLayersCountLessThanOne()
         {
-            Action action = () => new NeuralNetworkNew(new ILayer[0], 3);
+            Action action = () => new NeuralNetwork(new ILayer[0], 3);
             action.ShouldThrow<NeuralNetworksException>().WithMessage("Neural network must have at least 1 layers");
         }
 

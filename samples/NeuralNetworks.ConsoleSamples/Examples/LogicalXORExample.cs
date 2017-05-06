@@ -1,4 +1,5 @@
 ﻿using NeuralNetworks.ActivationFunctions;
+using NeuralNetworks.ConsoleSamples.Extensions;
 using NeuralNetworks.CostFunctions;
 using NeuralNetworks.Tools;
 using NeuralNetworks.Training;
@@ -13,7 +14,7 @@ namespace NeuralNetworks.ConsoleSamples.Examples
         public void Run()
         {
             var neuralNetworkDto = Builder.Build(new List<int> { 2, 3, 1 }, ActivationFunctionType.Sigmoid);
-            Randomiser.Randomise(neuralNetworkDto);
+            Randomiser.Randomise(neuralNetworkDto, new Random(5));
 
             Console.WriteLine("Evaluationg untrained neural network");
             DisplayEvaluation(neuralNetworkDto);
@@ -51,7 +52,7 @@ namespace NeuralNetworks.ConsoleSamples.Examples
 
         private void DisplayEvaluation(NeuralNetworkDto neuralNetworkDto)
         {
-            var neuralNetwork = new NeuralNetwork(neuralNetworkDto);
+            var neuralNetwork = new NeuralNetwork(neuralNetworkDto.ToLayers(), neuralNetworkDto.InputNeuronsCount);
             var output1 = neuralNetwork.Run(new double[] { 0D, 0D })[0].ToString("N10");
             var output2 = neuralNetwork.Run(new double[] { 1D, 0D })[0].ToString("N10");
             var output3 = neuralNetwork.Run(new double[] { 0D, 1D })[0].ToString("N10");
@@ -62,7 +63,5 @@ namespace NeuralNetworks.ConsoleSamples.Examples
             Console.WriteLine($"Input: 1;1   Output: {output4}   Expected output: 0");
             Console.WriteLine();
         }
-
-        
     }
 }

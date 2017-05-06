@@ -1,4 +1,5 @@
 ﻿using NeuralNetworks.ActivationFunctions;
+using NeuralNetworks.ConsoleSamples.Extensions;
 using NeuralNetworks.ConsoleSamples.Helpers;
 using NeuralNetworks.CostFunctions;
 using NeuralNetworks.Tools;
@@ -29,7 +30,7 @@ namespace NeuralNetworks.ConsoleSamples.Examples
             Randomiser.Randomise(neuralNetworkDto);
 
             Console.WriteLine("Evaluating untrained neural network");
-            var untrainedAccuracy = Statistics.GetAccuracyByMax(_validationData, neuralNetworkDto);
+            var untrainedAccuracy = Statistics.GetAccuracyByMax(_validationData, new NeuralNetwork(neuralNetworkDto.ToLayers(), neuralNetworkDto.InputNeuronsCount));
             Console.WriteLine($"Untrained network accuracy: {untrainedAccuracy.ToString("N2")}%");
                         
             var stochasticGradientDescent = new StochasticGradientDescent(new Sigmoid(), new CrossEntropy(), 1, 20, 1D, 0D);
@@ -40,7 +41,7 @@ namespace NeuralNetworks.ConsoleSamples.Examples
             {
                 Console.WriteLine($"Epoch {i + 1} started");
                 var trainingLength = Statistics.GetTrainingLength(stochasticGradientDescent, neuralNetworkDto, _trainingData);
-                var trainingAccuracy = Statistics.GetAccuracyByMax(_validationData, neuralNetworkDto);
+                var trainingAccuracy = Statistics.GetAccuracyByMax(_validationData, new NeuralNetwork(neuralNetworkDto.ToLayers(), neuralNetworkDto.InputNeuronsCount));
                 Console.WriteLine($"Results after epoch {i + 1}:");
                 Console.WriteLine($"Training length in miliseconds: {trainingLength}, Accuracy: {trainingAccuracy.ToString("N2")}%");
 

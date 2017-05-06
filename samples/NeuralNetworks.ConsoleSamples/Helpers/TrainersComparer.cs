@@ -17,8 +17,9 @@ namespace NeuralNetworks.ConsoleSamples.Helpers
                 var compareResult = new CompareResult();
                 var neuralNetworkDtoCopy = neuralNetworkDto.Copy();
                 compareResult.ElapsedTimeInMillisecond = Statistics.GetTrainingLength(trainer, neuralNetworkDtoCopy, trainingData.ToList());
-                compareResult.Accuracy = Statistics.GetAccuracy(validationData, neuralNetworkDtoCopy);
-                compareResult.AccuracyByMax = Statistics.GetAccuracyByMax(validationData, neuralNetworkDtoCopy);
+                var neuralNetwork = new NeuralNetwork(neuralNetworkDtoCopy.ToLayers(), neuralNetworkDtoCopy.InputNeuronsCount);
+                compareResult.Accuracy = Statistics.GetAccuracy(validationData, neuralNetwork);
+                compareResult.AccuracyByMax = Statistics.GetAccuracyByMax(validationData, neuralNetwork);
                 result.Add(compareResult);
             }
 

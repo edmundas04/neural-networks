@@ -15,10 +15,8 @@ namespace NeuralNetworks.Tools
             return stopWatch.ElapsedMilliseconds;
         }
 
-        public static double GetAccuracyByMax(List<TrainingElement> validationData, NeuralNetworkDto neuralNetworkDto)
+        public static double GetAccuracyByMax(List<TrainingElement> validationData, INeuralNetwork neuralNetwork)
         {
-            var neuralNetwork = new NeuralNetwork(neuralNetworkDto);
-
             var correctCount = 0;
 
             foreach (var validationItem in validationData)
@@ -50,9 +48,8 @@ namespace NeuralNetworks.Tools
             return expectedOutput[maxIndex] == 1D;
         }
 
-        public static double GetAccuracy(List<TrainingElement> validationData, NeuralNetworkDto neuralNetworkDto)
+        public static double GetAccuracy(List<TrainingElement> validationData, INeuralNetwork neuralNetwork)
         {
-            var neuralNetwork = new NeuralNetwork(neuralNetworkDto);
             var correctCount = 0;
 
             for (int i = 0; i < validationData.Count; i++)

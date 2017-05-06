@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using NeuralNetworks.ActivationFunctions;
+using NeuralNetworks.Layers;
+using System.Linq;
 
 namespace NeuralNetworks.ConsoleSamples.Extensions
 {
@@ -32,6 +34,27 @@ namespace NeuralNetworks.ConsoleSamples.Extensions
                 Bias = neuronDto.Bias,
                 Position = neuronDto.Position
             };
+        }
+
+        //TODO: Remove this code after refactoring
+        public static ILayer[] ToLayers(this NeuralNetworkDto neuralNetworkDto)
+        {
+            var result = new ILayer[neuralNetworkDto.NeuronsLayers.Count];
+            var primaryNeuronsCount = neuralNetworkDto.InputNeuronsCount;
+
+            for (int i = 0; i < neuralNetworkDto.NeuronsLayers.Count; i++)
+            {
+                var neurons = neuralNetworkDto.NeuronsLayers[i];
+                var synapses = neuralNetworkDto.SynapsesLayers[i];
+
+                var layer = new FullyConnectedLayer(new Sigmoid(), neurons.Count, primaryNeuronsCount);
+                layer.UpdateNeuronsBiases(neurons.Select(s => s.Bias).ToArray());
+                layer.UpdateSynapsesWeights(synapses.Select(s => s.Weight).ToArray());
+                result[i] = layer;
+                primaryNeuronsCount = neurons.Count;
+            }
+
+            return result;
         }
     }
 }

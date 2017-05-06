@@ -2,10 +2,12 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NeuralNetworks.ActivationFunctions;
 using NeuralNetworks.CostFunctions;
+using NeuralNetworks.Layers;
 using NeuralNetworks.Tools;
 using NeuralNetworks.Training;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace NeuralNetworks.Tests.IntegrationTests.Training
 {
@@ -13,6 +15,7 @@ namespace NeuralNetworks.Tests.IntegrationTests.Training
     public class StochasticGradientDescentShould
     {
         private NeuralNetworkDto _logicalXORneuralNetworkDto;
+        private ILayer[] _logicalXORNeuralNetwrokLayers;
         private List<TrainingElement> _trainingData;
 
         [TestInitialize]
@@ -45,13 +48,34 @@ namespace NeuralNetworks.Tests.IntegrationTests.Training
             };
         }
 
+        //TODO: Remove this code after refactoring
+        private ILayer[] ToLayers(NeuralNetworkDto neuralNetworkDto)
+        {
+            var result = new ILayer[neuralNetworkDto.NeuronsLayers.Count];
+            var primaryNeuronsCount = neuralNetworkDto.InputNeuronsCount;
+
+            for (int i = 0; i < neuralNetworkDto.NeuronsLayers.Count; i++)
+            {
+                var neurons = neuralNetworkDto.NeuronsLayers[i];
+                var synapses = neuralNetworkDto.SynapsesLayers[i];
+
+                var layer = new FullyConnectedLayer(new Sigmoid(), neurons.Count, primaryNeuronsCount);
+                layer.UpdateNeuronsBiases(neurons.Select(s => s.Bias).ToArray());
+                layer.UpdateSynapsesWeights(synapses.Select(s => s.Weight).ToArray());
+                result[i] = layer;
+                primaryNeuronsCount = neurons.Count;
+            }
+
+            return result;
+        }
+
         [TestMethod]
         public void ShouldTrainUsingQuadraticCostFunction()
         {
             var stochasticGradientDescent = new StochasticGradientDescent(new Sigmoid(), new Quadratic(), 3000, 4, 5D, 0);
             stochasticGradientDescent.Train(_logicalXORneuralNetworkDto, _trainingData);
 
-            var neuralNetwork = new NeuralNetwork(_logicalXORneuralNetworkDto);
+            var neuralNetwork = new NeuralNetwork(ToLayers(_logicalXORneuralNetworkDto), _logicalXORneuralNetworkDto.InputNeuronsCount);
             var result1 = neuralNetwork.Run(_trainingData[0].Inputs);
             result1.Should().HaveCount(1);
             Math.Round(result1[0], 10).Should().Be(0.0245579310D);
@@ -75,7 +99,7 @@ namespace NeuralNetworks.Tests.IntegrationTests.Training
             var stochasticGradientDescent = new StochasticGradientDescent(new Sigmoid(), new CrossEntropy(), 3000, 4, 5D, 0);
             stochasticGradientDescent.Train(_logicalXORneuralNetworkDto, _trainingData);
 
-            var neuralNetwork = new NeuralNetwork(_logicalXORneuralNetworkDto);
+            var neuralNetwork = new NeuralNetwork(ToLayers(_logicalXORneuralNetworkDto), _logicalXORneuralNetworkDto.InputNeuronsCount);
             var result1 = neuralNetwork.Run(_trainingData[0].Inputs);
             result1.Should().HaveCount(1);
             Math.Round(result1[0], 10).Should().Be(0.0005468953D);
@@ -99,7 +123,7 @@ namespace NeuralNetworks.Tests.IntegrationTests.Training
             var stochasticGradientDescent = new StochasticGradientDescent(new Sigmoid(), new CrossEntropy(), 3000, 4, 5D, 0.01D);
             stochasticGradientDescent.Train(_logicalXORneuralNetworkDto, _trainingData);
 
-            var neuralNetwork = new NeuralNetwork(_logicalXORneuralNetworkDto);
+            var neuralNetwork = new NeuralNetwork(ToLayers(_logicalXORneuralNetworkDto), _logicalXORneuralNetworkDto.InputNeuronsCount);
             var result1 = neuralNetwork.Run(_trainingData[0].Inputs);
             result1.Should().HaveCount(1);
             Math.Round(result1[0], 10).Should().Be(0.0285179059D);
