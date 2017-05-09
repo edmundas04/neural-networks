@@ -1,5 +1,6 @@
 ﻿using NeuralNetworks.ActivationFunctions;
 using NeuralNetworks.CostFunctions;
+using NeuralNetworks.Exceptions;
 using NeuralNetworks.Extensions;
 using NeuralNetworks.Layers;
 using System;
@@ -8,7 +9,7 @@ using System.Linq;
 
 namespace NeuralNetworks.Training
 {
-    public class StochasticGradientDescentNew
+    public class StochasticGradientDescentNew : ITrainer
     {
         private readonly ICostFunction _costFunction;
         private readonly int _epochs;
@@ -45,65 +46,89 @@ namespace NeuralNetworks.Training
             _regularizationParam = regularizationParam;
         }
 
-        public void Train(ILayer[] layers, List<TrainingElement> trainingData)
+        //TODO: Remove this code after refactoring
+        private ILayer[] ToLayers(NeuralNetworkDto neuralNetworkDto)
         {
-            //if (trainingData.Count < _trainingBatchSize)
-            //{
-            //    throw new Exception("Training batch must be greater than trainingData size");
-            //}
+            var result = new ILayer[neuralNetworkDto.NeuronsLayers.Count];
+            var primaryNeuronsCount = neuralNetworkDto.InputNeuronsCount;
 
-            //if (!trainingData.All(x => x.Inputs.Length == dto.InputNeuronsCount))
-            //{
-            //    throw new Exception(string.Format("All inputs of test data must be length of {0}", dto.InputNeuronsCount));
-            //}
+            for (int i = 0; i < neuralNetworkDto.NeuronsLayers.Count; i++)
+            {
+                var neurons = neuralNetworkDto.NeuronsLayers[i];
+                var synapses = neuralNetworkDto.SynapsesLayers[i];
 
-            //if (!trainingData.All(x => x.ExpectedOutputs.Length == dto.NeuronsLayers.Last().Count))
-            //{
-            //    throw new Exception(string.Format("All expected outputs of test data must be length of {0}", dto.NeuronsLayers.Last().Count));
-            //}
+                var layer = new FullyConnectedLayer(new Sigmoid(), synapses.Select(s => s.Weight).ToArray(), neurons.Select(s => s.Bias).ToArray());
+                result[i] = layer;
+                primaryNeuronsCount = neurons.Count;
+            }
 
-            //var skip = 0;
-            //var epochs = _epochs;
-
-            //var neuronsBiases = dto.ToBiasesArray();
-            //var synapsesWeights = dto.ToWeightsArray();
-
-            //while (epochs-- > 0)
-            //{
-            //    trainingData.Shuffle();
-            //    while (skip + _trainingBatchSize <= trainingData.Count)
-            //    {
-            //        var trainingBatch = trainingData.Skip(skip).Take(_trainingBatchSize).ToList();
-            //        PerformGradientDescent(neuronsBiases, synapsesWeights, trainingData.Count, trainingBatch);
-            //        skip += _trainingBatchSize;
-            //    }
-            //    skip = 0;
-            //}
-
-            //for (int i = 0; i < neuronsBiases.Length; i++)
-            //{
-            //    var positionNeuronMap = dto.NeuronsLayers[i].ToDictionary(x => x.Position);
-
-            //    for (int j = 0; j < neuronsBiases[i].Length; j++)
-            //    {
-            //        positionNeuronMap[j].Bias = neuronsBiases[i][j];
-            //    }
-            //}
-
-            //for (int i = 0; i < synapsesWeights.Length; i++)
-            //{
-            //    var targetNeuronsCount = neuronsBiases[i].Length;
-            //    var positionSynapseMap = dto.SynapsesLayers[i].ToDictionary(x => x.PrimaryNeuronPosition * targetNeuronsCount + x.TargetNeuronPosition);
-
-            //    for (int j = 0; j < synapsesWeights[i].Length; j++)
-            //    {
-            //        positionSynapseMap[j].Weight = synapsesWeights[i][j];
-            //    }
-
-            //}
+            return result;
         }
 
-        private void PerformGradientDescent(double[][] neuronsBiases, double[][] synapsesWeights, double trainingDataSetSize, List<TrainingElement> trainingBatch)
+        public void Train(NeuralNetworkDto dto, List<TrainingElement> trainingData)
+        {
+            var layers = ToLayers(dto);
+            var firstLayer = layers.First();
+            var inputNeuronsCount = firstLayer.SynapsesWeights.Length / firstLayer.NeuronsBiases.Length;
+            var outputNeuronsCount = layers.Last().NeuronsBiases.Length;
+
+            if (trainingData.Count < _trainingBatchSize)
+            {
+                throw new NeuralNetworksException("Training batch must be greater than trainingData size");
+            }
+
+            if (!trainingData.All(x => x.Inputs.Length == inputNeuronsCount))
+            {
+                throw new NeuralNetworksException(string.Format("All inputs of test data must be length of {0}", inputNeuronsCount));
+            }
+
+            if (!trainingData.All(x => x.ExpectedOutputs.Length == outputNeuronsCount))
+            {
+                throw new NeuralNetworksException(string.Format("All expected outputs of test data must be length of {0}", outputNeuronsCount));
+            }
+
+            var skip = 0;
+            var epochs = _epochs;
+
+            var neuronsBiases = layers.Select(s => s.NeuronsBiases).ToArray();
+            var synapsesWeights = layers.Select(s => s.SynapsesWeights).ToArray();
+
+            while (epochs-- > 0)
+            {
+                trainingData.Shuffle();
+                while (skip + _trainingBatchSize <= trainingData.Count)
+                {
+                    var trainingBatch = trainingData.Skip(skip).Take(_trainingBatchSize).ToList();
+                    PerformGradientDescent(layers, trainingBatch, neuronsBiases, synapsesWeights, trainingData.Count);
+                    skip += _trainingBatchSize;
+                }
+                skip = 0;
+            }
+
+            for (int i = 0; i < neuronsBiases.Length; i++)
+            {
+                var positionNeuronMap = dto.NeuronsLayers[i].ToDictionary(x => x.Position);
+
+                for (int j = 0; j < neuronsBiases[i].Length; j++)
+                {
+                    positionNeuronMap[j].Bias = neuronsBiases[i][j];
+                }
+            }
+
+            for (int i = 0; i < synapsesWeights.Length; i++)
+            {
+                var targetNeuronsCount = neuronsBiases[i].Length;
+                var positionSynapseMap = dto.SynapsesLayers[i].ToDictionary(x => x.PrimaryNeuronPosition * targetNeuronsCount + x.TargetNeuronPosition);
+
+                for (int j = 0; j < synapsesWeights[i].Length; j++)
+                {
+                    positionSynapseMap[j].Weight = synapsesWeights[i][j];
+                }
+
+            }
+        }
+
+        private void PerformGradientDescent(ILayer[] layers, List<TrainingElement> trainingBatch, double[][] neuronsBiases, double[][] synapsesWeights, double trainingDataSetSize)
         {
             var neuronGradients = neuronsBiases.CopyWithZeros();
             var synapseGradients = synapsesWeights.CopyWithZeros();
@@ -111,8 +136,7 @@ namespace NeuralNetworks.Training
             for (int i = 0; i < trainingBatch.Count; i++)
             {
                 var trainingElement = trainingBatch[i];
-                var backpropagationResult = Backpropagation(synapseGradients, neuronsBiases, synapsesWeights, trainingElement.Inputs, trainingElement.ExpectedOutputs);
-                neuronGradients.Sum(backpropagationResult);
+                Backpropagation(layers, synapseGradients, neuronGradients, neuronsBiases, synapsesWeights, trainingElement.Inputs, trainingElement.ExpectedOutputs);
             }
 
             var learningRateApproximation = (_learningRate / _trainingBatchSize);
@@ -141,116 +165,105 @@ namespace NeuralNetworks.Training
             }
         }
 
-        private double[][] Backpropagation(double[][] synapsesGradients, double[][] neuronsBiases, double[][] synapsesWeights, double[] inputs, double[] expectedOutputs)
+        private void Backpropagation(ILayer[] layers, double[][] synapsesGradients, double[][] neuronsGradients, double[][] neuronsBiases, double[][] synapsesWeights, double[] inputs, double[] expectedOutputs)
         {
-            var feedForwardResult = FeedForward(neuronsBiases, synapsesWeights, inputs);
-            var neuronsInputs = feedForwardResult.ProducedInputs;
-            var neuronsOutputs = feedForwardResult.ProducedOutputs;
+            var feedForwardResult = FeedForward(layers, inputs);
+            var neuronsInputs = feedForwardResult.ProducedOutputs;
+            var neuronsOutputs = feedForwardResult.ProducedActivations;
 
-            var neuronsGradients = neuronsBiases.CopyWithZeros();
+            var neuronsAdittionsToGradients = neuronsBiases.CopyWithZeros();
+            var outputLayerIndex = neuronsAdittionsToGradients.Length - 1;
+            var lastLayerActivationFunction = layers[outputLayerIndex].ActivationFunction;
+            var synapseIndex = 0;
 
-            //var outputLayerIndex = neuronsGradients.Length - 1;
+            for (int i = 0; i < neuronsAdittionsToGradients[outputLayerIndex].Length; i++)
+            {
+                var expectedOutput = expectedOutputs[i];
+                var activationDerivative = lastLayerActivationFunction.ActivationDerivative(neuronsBiases[outputLayerIndex][i] + neuronsInputs[outputLayerIndex][i]);
+                var gradient = _costFunction.CostDerivative(neuronsOutputs[outputLayerIndex][i], expectedOutput, activationDerivative);
+                neuronsAdittionsToGradients[outputLayerIndex][i] += gradient;
+            }
 
-            //var synapseIndex = 0;
+            for (var i = synapsesGradients.Length - 1; i > 0; i--)
+            {
+                var layerPrimaryNeuronsOutputs = neuronsOutputs[i - 1];
+                var layerPrimaryNeuronsGradients = neuronsAdittionsToGradients[i - 1];
+                var layerPrimaryNeuronsBiases = neuronsBiases[i - 1];
+                var layerPrimaryNeuronsInputs = neuronsInputs[i - 1];
 
-            //for (int i = 0; i < neuronsGradients[outputLayerIndex].Length; i++)
-            //{
-            //    var expectedOutput = expectedOutputs[i];
-            //    var activationDerivative = _activationFunction.ActivationDerivative(neuronsBiases[outputLayerIndex][i] + neuronsInputs[outputLayerIndex][i]);
-            //    var gradient = _costFunction.CostDerivative(neuronsOutputs[outputLayerIndex][i], expectedOutput, activationDerivative);
-            //    neuronsGradients[outputLayerIndex][i] += gradient;
-            //}
+                var layerTargetNeuronsGradients = neuronsAdittionsToGradients[i];
+                var layerSynapsesGradients = synapsesGradients[i];
+                var layerSynapsesWeights = synapsesWeights[i];
 
-            //for (var i = synapsesGradients.Length - 1; i > 0; i--)
-            //{
-            //    var layerPrimaryNeuronsOutputs = neuronsOutputs[i - 1];
-            //    var layerPrimaryNeuronsGradients = neuronsGradients[i - 1];
-            //    var layerPrimaryNeuronsBiases = neuronsBiases[i - 1];
-            //    var layerPrimaryNeuronsInputs = neuronsInputs[i - 1];
+                var primaryNeuronsCount = neuronsInputs[i - 1].Length;
+                var targetNeuronsCount = neuronsInputs[i].Length;
 
-            //    var layerTargetNeuronsGradients = neuronsGradients[i];
-            //    var layerSynapsesGradients = synapsesGradients[i];
-            //    var layerSynapsesWeights = synapsesWeights[i];
+                synapseIndex = primaryNeuronsCount * targetNeuronsCount - 1;
 
-            //    var primaryNeuronsCount = neuronsInputs[i - 1].Length;
-            //    var targetNeuronsCount = neuronsInputs[i].Length;
+                for (int j = primaryNeuronsCount - 1; j >= 0; j--)
+                {
+                    for (int k = targetNeuronsCount - 1; k >= 0; k--)
+                    {
+                        var targetNeuronGradient = layerTargetNeuronsGradients[k];
+                        layerSynapsesGradients[synapseIndex] += layerPrimaryNeuronsOutputs[j] * targetNeuronGradient;
+                        layerPrimaryNeuronsGradients[j] += targetNeuronGradient * layerSynapsesWeights[synapseIndex];
+                        synapseIndex--;
+                    }
+                }
 
-            //    synapseIndex = primaryNeuronsCount * targetNeuronsCount - 1;
+                var layerActivationFunction = layers[i].ActivationFunction;
 
-            //    for (int j = primaryNeuronsCount - 1; j >= 0; j--)
-            //    {
-            //        for (int k = targetNeuronsCount - 1; k >= 0; k--)
-            //        {
-            //            var targetNeuronGradient = layerTargetNeuronsGradients[k];
-            //            layerSynapsesGradients[synapseIndex] += layerPrimaryNeuronsOutputs[j] * targetNeuronGradient;
-            //            layerPrimaryNeuronsGradients[j] += targetNeuronGradient * layerSynapsesWeights[synapseIndex];
-            //            synapseIndex--;
-            //        }
-            //    }
+                for (int j = 0; j < primaryNeuronsCount; j++)
+                {
+                    layerPrimaryNeuronsGradients[j] *= layerActivationFunction.ActivationDerivative(layerPrimaryNeuronsBiases[j] + layerPrimaryNeuronsInputs[j]);
+                }
+            }
 
-            //    for (int j = 0; j < primaryNeuronsCount; j++)
-            //    {
-            //        layerPrimaryNeuronsGradients[j] *= _activationFunction.ActivationDerivative(layerPrimaryNeuronsBiases[j] + layerPrimaryNeuronsInputs[j]);
-            //    }
-            //}
+            var inputNeuronsCount = inputs.Length;
+            var firstLayerNeuronsCount = neuronsInputs[0].Length;
 
-            //var inputNeuronsCount = inputs.Length;
-            //var firstLayerNeuronsCount = neuronsInputs[0].Length;
+            var firstLayerTargetNeuronsGradients = neuronsAdittionsToGradients[0];
+            var firstLayerSynapsesGradients = synapsesGradients[0];
 
-            //var firstLayerTargetNeuronsGradients = neuronsGradients[0];
-            //var firstLayerSynapsesGradients = synapsesGradients[0];
+            synapseIndex = 0;
 
-            //synapseIndex = 0;
+            for (int j = 0; j < inputNeuronsCount; j++)
+            {
+                for (int k = 0; k < firstLayerNeuronsCount; k++)
+                {
+                    firstLayerSynapsesGradients[synapseIndex] += inputs[j] * firstLayerTargetNeuronsGradients[k];
+                    synapseIndex++;
+                }
+            }
 
-            //for (int j = 0; j < inputNeuronsCount; j++)
-            //{
-            //    for (int k = 0; k < firstLayerNeuronsCount; k++)
-            //    {
-            //        firstLayerSynapsesGradients[synapseIndex] += inputs[j] * firstLayerTargetNeuronsGradients[k];
-            //        synapseIndex++;
-            //    }
-            //}
-
-            return neuronsGradients;
+            neuronsGradients.Sum(neuronsAdittionsToGradients);
         }
 
-        private FeedForwardResult FeedForward(double[][] neuronsBiases, double[][] synapsesWeights, double[] inputs)
+        private FeedForwardResult FeedForward(ILayer[] layers, double[] inputs)
         {
-            var producedInputs = neuronsBiases.CopyWithZeros();
-            var producedOutputs = neuronsBiases.CopyWithZeros();
+            var layersCount = layers.Length;
 
-            //for (int i = 0; i < synapsesWeights.Length; i++)
-            //{
-            //    var primaryNeurons = i == 0 ? inputs : producedOutputs[i - 1];
-            //    var targetNeuronInputs = producedInputs[i];
-            //    var targetNeuronOutputs = producedOutputs[i];
-            //    var synapses = synapsesWeights[i];
-            //    var primaryNeuronsCount = primaryNeurons.Length;
-            //    var targetNeuronsCount = targetNeuronInputs.Length;
-            //    var synapseIndex = primaryNeuronsCount * targetNeuronsCount - 1;
+            var producedOutputs = new double[layersCount][];
+            var producedActivations = new double[layersCount][];
 
-            //    for (int j = primaryNeuronsCount - 1; j >= 0; j--)
-            //    {
-            //        for (int k = targetNeuronsCount - 1; k >= 0; k--)
-            //        {
-            //            targetNeuronInputs[k] += primaryNeurons[j] * synapses[synapseIndex];
-            //            synapseIndex--;
-            //        }
-            //    }
+            var perviousLayerActivations = inputs;
+            for (int i = 0; i < layersCount; i++)
+            {
+                var layer = layers[i];
+                layer.Produce(perviousLayerActivations);
+                producedOutputs[i] = layer.Outputs;
+                var activations = layer.Activations;
+                producedActivations[i] = activations;
+                perviousLayerActivations = activations;
+            }
 
-            //    for (int j = 0; j < targetNeuronsCount; j++)
-            //    {
-            //        targetNeuronOutputs[j] = _activationFunction.Activate(targetNeuronInputs[j] + neuronsBiases[i][j]);
-            //    }
-            //}
-
-            return new FeedForwardResult { ProducedInputs = producedInputs, ProducedOutputs = producedOutputs };
+            return new FeedForwardResult { ProducedOutputs = producedOutputs, ProducedActivations = producedActivations };
         }
 
         private class FeedForwardResult
         {
-            public double[][] ProducedInputs { get; set; }
             public double[][] ProducedOutputs { get; set; }
+            public double[][] ProducedActivations { get; set; }
         }
     }
 }
