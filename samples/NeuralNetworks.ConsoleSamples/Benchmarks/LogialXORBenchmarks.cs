@@ -1,5 +1,6 @@
 ﻿using BenchmarkDotNet.Attributes;
 using NeuralNetworks.ActivationFunctions;
+using NeuralNetworks.ConsoleSamples.Extensions;
 using NeuralNetworks.CostFunctions;
 using NeuralNetworks.Tools;
 using NeuralNetworks.Training;
@@ -46,13 +47,15 @@ namespace NeuralNetworks.ConsoleSamples.Benchmarks
                     ExpectedOutputs = new double[] { 0D }
                 }
             };
-            _trainer1 = new StochasticGradientDescent(new Sigmoid(), new CrossEntropy(), 10000, 4, 5D, 0D);
+
             _neuralNetworkDto1 = Builder.Build(new List<int> { 2, 3, 1 }, ActivationFunctionType.Sigmoid);
             Randomiser.Randomise(_neuralNetworkDto1, new Random(1));
+            _trainer1 = new StochasticGradientDescent(new Sigmoid(), new CrossEntropy(), 1000, 4, 5D, 0D);
 
-            _trainer2 = new StochasticGradientDescentNew(new CrossEntropy(), 10000, 4, 5D, 0D);
             _neuralNetworkDto2 = Builder.Build(new List<int> { 2, 3, 1 }, ActivationFunctionType.Sigmoid);
             Randomiser.Randomise(_neuralNetworkDto2, new Random(1));
+            _trainer2 = new StochasticGradientDescentNew(new CrossEntropy(), _neuralNetworkDto2.ToLayers(), 1000, 4, 5D, 0D);
+            
         }
 
         [Benchmark]

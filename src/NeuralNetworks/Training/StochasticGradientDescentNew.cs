@@ -1,5 +1,4 @@
-﻿using NeuralNetworks.ActivationFunctions;
-using NeuralNetworks.CostFunctions;
+﻿using NeuralNetworks.CostFunctions;
 using NeuralNetworks.Exceptions;
 using NeuralNetworks.Extensions;
 using NeuralNetworks.Layers;
@@ -12,12 +11,18 @@ namespace NeuralNetworks.Training
     public class StochasticGradientDescentNew : ITrainer
     {
         private readonly ICostFunction _costFunction;
+        private readonly ILayer[] _layers;
         private readonly int _epochs;
         private readonly int _trainingBatchSize;
         private readonly double _learningRate;
         private readonly double _regularizationParam;
+        private readonly double[][] _neuronsBiases;
+        private readonly double[][] _synapsesWeights;
+        private readonly double[][] _neuronsGradients;
+        private readonly double[][] _synapsesGradients;
+        private readonly double[][] _neuronsAdittionsToGradients;
 
-        public StochasticGradientDescentNew(ICostFunction costFunction, int epochs, int trainingBatchSize, double learningRate, double regularizationParam)
+        public StochasticGradientDescentNew(ICostFunction costFunction, ILayer[] layers, int epochs, int trainingBatchSize, double learningRate, double regularizationParam)
         {
             if (learningRate <= 0)
             {
@@ -39,38 +44,30 @@ namespace NeuralNetworks.Training
                 throw new ArgumentException("regularizationRate must be greater or equal to zero");
             }
             
+            if(layers.Length < 2)
+            {
+                throw new NeuralNetworksException("At least two layers are mandatory");
+            }
+
             _costFunction = costFunction;
+            _layers = layers;
             _epochs = epochs;
             _trainingBatchSize = trainingBatchSize;
             _learningRate = learningRate;
             _regularizationParam = regularizationParam;
-        }
 
-        //TODO: Remove this code after refactoring
-        private ILayer[] ToLayers(NeuralNetworkDto neuralNetworkDto)
-        {
-            var result = new ILayer[neuralNetworkDto.NeuronsLayers.Count];
-            var primaryNeuronsCount = neuralNetworkDto.InputNeuronsCount;
-
-            for (int i = 0; i < neuralNetworkDto.NeuronsLayers.Count; i++)
-            {
-                var neurons = neuralNetworkDto.NeuronsLayers[i];
-                var synapses = neuralNetworkDto.SynapsesLayers[i];
-
-                var layer = new FullyConnectedLayer(new Sigmoid(), synapses.Select(s => s.Weight).ToArray(), neurons.Select(s => s.Bias).ToArray());
-                result[i] = layer;
-                primaryNeuronsCount = neurons.Count;
-            }
-
-            return result;
+            _neuronsBiases = layers.Select(s => s.NeuronsBiases).ToArray();
+            _synapsesWeights = layers.Select(s => s.SynapsesWeights).ToArray();
+            _neuronsGradients = _neuronsBiases.CopyWithZeros();
+            _synapsesGradients = _synapsesWeights.CopyWithZeros();
+            _neuronsAdittionsToGradients = _neuronsBiases.CopyWithZeros();
         }
 
         public void Train(NeuralNetworkDto dto, List<TrainingElement> trainingData)
         {
-            var layers = ToLayers(dto);
-            var firstLayer = layers.First();
+            var firstLayer = _layers.First();
             var inputNeuronsCount = firstLayer.SynapsesWeights.Length / firstLayer.NeuronsBiases.Length;
-            var outputNeuronsCount = layers.Last().NeuronsBiases.Length;
+            var outputNeuronsCount = _layers.Last().NeuronsBiases.Length;
 
             if (trainingData.Count < _trainingBatchSize)
             {
@@ -89,54 +86,53 @@ namespace NeuralNetworks.Training
 
             var skip = 0;
             var epochs = _epochs;
-
-            var neuronsBiases = layers.Select(s => s.NeuronsBiases).ToArray();
-            var synapsesWeights = layers.Select(s => s.SynapsesWeights).ToArray();
-
+            
             while (epochs-- > 0)
             {
                 trainingData.Shuffle();
                 while (skip + _trainingBatchSize <= trainingData.Count)
                 {
                     var trainingBatch = trainingData.Skip(skip).Take(_trainingBatchSize).ToList();
-                    PerformGradientDescent(layers, trainingBatch, neuronsBiases, synapsesWeights, trainingData.Count);
+                    PerformGradientDescent(trainingBatch, trainingData.Count);
                     skip += _trainingBatchSize;
                 }
                 skip = 0;
             }
 
-            for (int i = 0; i < neuronsBiases.Length; i++)
+            for (int i = 0; i < _neuronsBiases.Length; i++)
             {
                 var positionNeuronMap = dto.NeuronsLayers[i].ToDictionary(x => x.Position);
 
-                for (int j = 0; j < neuronsBiases[i].Length; j++)
+                for (int j = 0; j < _neuronsBiases[i].Length; j++)
                 {
-                    positionNeuronMap[j].Bias = neuronsBiases[i][j];
+                    positionNeuronMap[j].Bias = _neuronsBiases[i][j];
                 }
             }
 
-            for (int i = 0; i < synapsesWeights.Length; i++)
+            for (int i = 0; i < _synapsesWeights.Length; i++)
             {
-                var targetNeuronsCount = neuronsBiases[i].Length;
+                var targetNeuronsCount = _neuronsBiases[i].Length;
                 var positionSynapseMap = dto.SynapsesLayers[i].ToDictionary(x => x.PrimaryNeuronPosition * targetNeuronsCount + x.TargetNeuronPosition);
 
-                for (int j = 0; j < synapsesWeights[i].Length; j++)
+                for (int j = 0; j < _synapsesWeights[i].Length; j++)
                 {
-                    positionSynapseMap[j].Weight = synapsesWeights[i][j];
+                    positionSynapseMap[j].Weight = _synapsesWeights[i][j];
                 }
 
             }
         }
 
-        private void PerformGradientDescent(ILayer[] layers, List<TrainingElement> trainingBatch, double[][] neuronsBiases, double[][] synapsesWeights, double trainingDataSetSize)
+        private void PerformGradientDescent(List<TrainingElement> trainingBatch, double trainingDataSetSize)
         {
-            var neuronGradients = neuronsBiases.CopyWithZeros();
-            var synapseGradients = synapsesWeights.CopyWithZeros();
+            var neuronsBiases = _neuronsBiases;
+            var synapsesWeights = _synapsesWeights;
+            var neuronsGradients = _neuronsGradients;
+            var synapsesGradients = _synapsesGradients;
 
             for (int i = 0; i < trainingBatch.Count; i++)
             {
                 var trainingElement = trainingBatch[i];
-                Backpropagation(layers, synapseGradients, neuronGradients, neuronsBiases, synapsesWeights, trainingElement.Inputs, trainingElement.ExpectedOutputs);
+                Backpropagation(trainingElement.Inputs, trainingElement.ExpectedOutputs);
             }
 
             var learningRateApproximation = (_learningRate / _trainingBatchSize);
@@ -145,7 +141,7 @@ namespace NeuralNetworks.Training
             {
                 for (int j = 0; j < neuronsBiases[i].Length; j++)
                 {
-                    neuronsBiases[i][j] -= learningRateApproximation * neuronGradients[i][j];
+                    neuronsBiases[i][j] -= learningRateApproximation * neuronsGradients[i][j];
                 }
             }
 
@@ -154,7 +150,7 @@ namespace NeuralNetworks.Training
             for (int i = 0; i < synapsesWeights.Length; i++)
             {
                 var layerSynapsesWeights = synapsesWeights[i];
-                var layerSynapsesGradients = synapseGradients[i];
+                var layerSynapsesGradients = synapsesGradients[i];
 
                 var synapsesLayerCount = layerSynapsesWeights.Length;
 
@@ -163,17 +159,25 @@ namespace NeuralNetworks.Training
                     layerSynapsesWeights[j] = (regulatizationParamApproximation * layerSynapsesWeights[j]) - (learningRateApproximation * layerSynapsesGradients[j]);
                 }
             }
+
+            neuronsGradients.FillWithZeros();
+            _synapsesGradients.FillWithZeros();
         }
 
-        private void Backpropagation(ILayer[] layers, double[][] synapsesGradients, double[][] neuronsGradients, double[][] neuronsBiases, double[][] synapsesWeights, double[] inputs, double[] expectedOutputs)
+        private void Backpropagation(double[] inputs, double[] expectedOutputs)
         {
-            var feedForwardResult = FeedForward(layers, inputs);
+            var neuronsBiases = _neuronsBiases;
+            var synapsesWeights = _synapsesWeights;
+            var neuronsGradients = _neuronsGradients;
+            var synapsesGradients = _synapsesGradients;
+            var neuronsAdittionsToGradients = _neuronsAdittionsToGradients;
+
+            var feedForwardResult = FeedForward(inputs);
             var neuronsInputs = feedForwardResult.ProducedOutputs;
             var neuronsOutputs = feedForwardResult.ProducedActivations;
 
-            var neuronsAdittionsToGradients = neuronsBiases.CopyWithZeros();
             var outputLayerIndex = neuronsAdittionsToGradients.Length - 1;
-            var lastLayerActivationFunction = layers[outputLayerIndex].ActivationFunction;
+            var lastLayerActivationFunction = _layers[outputLayerIndex].ActivationFunction;
             var synapseIndex = 0;
 
             for (int i = 0; i < neuronsAdittionsToGradients[outputLayerIndex].Length; i++)
@@ -211,7 +215,7 @@ namespace NeuralNetworks.Training
                     }
                 }
 
-                var layerActivationFunction = layers[i].ActivationFunction;
+                var layerActivationFunction = _layers[i].ActivationFunction;
 
                 for (int j = 0; j < primaryNeuronsCount; j++)
                 {
@@ -237,11 +241,12 @@ namespace NeuralNetworks.Training
             }
 
             neuronsGradients.Sum(neuronsAdittionsToGradients);
+            _neuronsAdittionsToGradients.FillWithZeros();
         }
 
-        private FeedForwardResult FeedForward(ILayer[] layers, double[] inputs)
+        private FeedForwardResult FeedForward(double[] inputs)
         {
-            var layersCount = layers.Length;
+            var layersCount = _layers.Length;
 
             var producedOutputs = new double[layersCount][];
             var producedActivations = new double[layersCount][];
@@ -249,7 +254,7 @@ namespace NeuralNetworks.Training
             var perviousLayerActivations = inputs;
             for (int i = 0; i < layersCount; i++)
             {
-                var layer = layers[i];
+                var layer = _layers[i];
                 layer.Produce(perviousLayerActivations);
                 producedOutputs[i] = layer.Outputs;
                 var activations = layer.Activations;

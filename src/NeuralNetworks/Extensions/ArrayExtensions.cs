@@ -1,4 +1,6 @@
-﻿namespace NeuralNetworks.Extensions
+﻿using System;
+
+namespace NeuralNetworks.Extensions
 {
     internal static class ArrayExtensions
     {
@@ -29,6 +31,22 @@
             }
 
             return result;
+        }
+
+        internal static void FillWithZeros(this double[][] arrays)
+        {
+            var arraysLength = arrays.Length;
+
+            for (int i = 0; i < arraysLength; i++)
+            {
+                var array = arrays[i];
+                var arrayLenght = array.Length;
+
+                for (int j = 0; j < arrayLenght; j++)
+                {
+                    array[j] = 0;
+                }
+            }
         }
     }
 }

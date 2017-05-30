@@ -1,5 +1,6 @@
 ﻿using BenchmarkDotNet.Attributes;
 using NeuralNetworks.ActivationFunctions;
+using NeuralNetworks.ConsoleSamples.Extensions;
 using NeuralNetworks.ConsoleSamples.Helpers;
 using NeuralNetworks.CostFunctions;
 using NeuralNetworks.Tools;
@@ -24,13 +25,14 @@ namespace NeuralNetworks.ConsoleSamples.Benchmarks
         public DigitsRecognitionBenchmarks()
         {
             _trainingData = TrainingDataLoader.Load("NeuralNetworks.ConsoleSamples.Resources.digits-image-validation-set.json");
-            _trainer1 = new StochasticGradientDescent(new Sigmoid(), new Quadratic(), 3, 10, 1D, 0);
+
             _neuralNetworkDto1 = Builder.Build(new List<int> { 784, 30, 10 }, ActivationFunctionType.Sigmoid);
             Randomiser.Randomise(_neuralNetworkDto1, new Random(1));
+            _trainer1 = new StochasticGradientDescent(new Sigmoid(), new Quadratic(), 3, 10, 1D, 0);
 
-            _trainer2 = new StochasticGradientDescentNew(new Quadratic(), 3, 10, 1D, 0);
             _neuralNetworkDto2 = Builder.Build(new List<int> { 784, 30, 10 }, ActivationFunctionType.Sigmoid);
             Randomiser.Randomise(_neuralNetworkDto2, new Random(1));
+            _trainer2 = new StochasticGradientDescentNew(new Quadratic(), _neuralNetworkDto2.ToLayers(), 3, 10, 1D, 0);
         }
 
         [Benchmark]
