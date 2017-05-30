@@ -59,6 +59,7 @@
     <Compile Include="Tools\Builder.cs" />
     <Compile Include="Tools\Randomiser.cs" />
     <Compile Include="Tools\Statistics.cs" />
+    <Compile Include="Training\ITrainerNew.cs" />
     <Compile Include="Training\ITrainer.cs" />
     <Compile Include="Training\StochasticGradientDescent.cs" />
     <Compile Include="Training\StochasticGradientDescentNew.cs" />

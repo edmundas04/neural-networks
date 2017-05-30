@@ -11,7 +11,7 @@ namespace NeuralNetworks.Layers
         public double[] Activations { get; }
         public double[] SynapsesWeights { get; }
         public double[] NeuronsBiases { get; }
-        private readonly int _primaryNeuronsCount;
+        public int PrimaryNeuronsCount { get; }
 
         public FullyConnectedLayer(IActivationFunction activationFunction, int currentNeuronsCount, int primaryNeuronsCount)
         {
@@ -30,7 +30,7 @@ namespace NeuralNetworks.Layers
             Activations = new double[currentNeuronsCount];
             SynapsesWeights = new double[currentNeuronsCount * primaryNeuronsCount];
             NeuronsBiases = new double[currentNeuronsCount];
-            _primaryNeuronsCount = primaryNeuronsCount;
+            PrimaryNeuronsCount = primaryNeuronsCount;
         }
 
         public FullyConnectedLayer(IActivationFunction activationFunction, double[] synapsesWeights, double[] neuronsBiases)
@@ -40,9 +40,9 @@ namespace NeuralNetworks.Layers
                 throw new NeuralNetworksException("Amount of neurons must be greater than zero");
             }
 
-            _primaryNeuronsCount = synapsesWeights.Length / neuronsBiases.Length;
+            PrimaryNeuronsCount = synapsesWeights.Length / neuronsBiases.Length;
 
-            if (_primaryNeuronsCount < 1)
+            if (PrimaryNeuronsCount < 1)
             {
                 throw new NeuralNetworksException("Amount of primary neurons must be greater than zero");
             }
@@ -65,15 +65,16 @@ namespace NeuralNetworks.Layers
             var neuronsBiases = NeuronsBiases;
             var synapsesWeights = SynapsesWeights;
 
+            var primaryNeuronsCount = PrimaryNeuronsCount;
             var currentNeuronsCount = neuronsBiases.Length;
             var activationFunction = ActivationFunction;
             var outputs = Outputs;
             Array.Clear(outputs, 0, currentNeuronsCount);
             var activations = Activations;            
 
-            var synapseIndex = 0;
+            var synapseIndex = 0;            
 
-            for (int i = 0; i < _primaryNeuronsCount; i++)
+            for (int i = 0; i < primaryNeuronsCount; i++)
             {
                 for (int j = 0; j < currentNeuronsCount; j++)
                 {

@@ -9,7 +9,8 @@ namespace NeuralNetworks.Layers
         double[] Activations { get; }
         double[] SynapsesWeights { get; }
         double[] NeuronsBiases { get; }
-        
+        int PrimaryNeuronsCount { get; }
+
         void Produce(double[] input);
     }
 }

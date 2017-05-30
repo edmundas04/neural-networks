@@ -8,7 +8,7 @@ using System.Linq;
 
 namespace NeuralNetworks.Training
 {
-    public class StochasticGradientDescentNew : ITrainer
+    public class StochasticGradientDescentNew : ITrainerNew
     {
         private readonly ICostFunction _costFunction;
         private readonly ILayer[] _layers;
@@ -63,7 +63,7 @@ namespace NeuralNetworks.Training
             _neuronsAdittionsToGradients = _neuronsBiases.CopyWithZeros();
         }
 
-        public void Train(NeuralNetworkDto dto, List<TrainingElement> trainingData)
+        public void Train(List<TrainingElement> trainingData)
         {
             var firstLayer = _layers.First();
             var inputNeuronsCount = firstLayer.SynapsesWeights.Length / firstLayer.NeuronsBiases.Length;
@@ -97,28 +97,6 @@ namespace NeuralNetworks.Training
                     skip += _trainingBatchSize;
                 }
                 skip = 0;
-            }
-
-            for (int i = 0; i < _neuronsBiases.Length; i++)
-            {
-                var positionNeuronMap = dto.NeuronsLayers[i].ToDictionary(x => x.Position);
-
-                for (int j = 0; j < _neuronsBiases[i].Length; j++)
-                {
-                    positionNeuronMap[j].Bias = _neuronsBiases[i][j];
-                }
-            }
-
-            for (int i = 0; i < _synapsesWeights.Length; i++)
-            {
-                var targetNeuronsCount = _neuronsBiases[i].Length;
-                var positionSynapseMap = dto.SynapsesLayers[i].ToDictionary(x => x.PrimaryNeuronPosition * targetNeuronsCount + x.TargetNeuronPosition);
-
-                for (int j = 0; j < _synapsesWeights[i].Length; j++)
-                {
-                    positionSynapseMap[j].Weight = _synapsesWeights[i][j];
-                }
-
             }
         }
 

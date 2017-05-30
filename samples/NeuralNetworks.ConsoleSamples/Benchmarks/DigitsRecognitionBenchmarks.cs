@@ -8,8 +8,6 @@ using NeuralNetworks.Training;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace NeuralNetworks.ConsoleSamples.Benchmarks
 {
@@ -19,7 +17,7 @@ namespace NeuralNetworks.ConsoleSamples.Benchmarks
         private readonly ITrainer _trainer1;
         private readonly NeuralNetworkDto _neuralNetworkDto1;
 
-        private readonly ITrainer _trainer2;
+        private readonly ITrainerNew _trainer2;
         private readonly NeuralNetworkDto _neuralNetworkDto2;
 
         public DigitsRecognitionBenchmarks()
@@ -44,7 +42,7 @@ namespace NeuralNetworks.ConsoleSamples.Benchmarks
         [Benchmark]
         public void StochasticGradientDescentNewBenchmark()
         {
-            _trainer2.Train(_neuralNetworkDto2, _trainingData.ToList());
+            _trainer2.Train(_trainingData.ToList());
         }
     }
 }
