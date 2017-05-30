@@ -1,7 +1,7 @@
 ﻿using BenchmarkDotNet.Attributes;
 using NeuralNetworks.ActivationFunctions;
-using NeuralNetworks.ConsoleSamples.Extensions;
 using NeuralNetworks.CostFunctions;
+using NeuralNetworks.Layers;
 using NeuralNetworks.Tools;
 using NeuralNetworks.Training;
 using System;
@@ -11,11 +11,7 @@ namespace NeuralNetworks.ConsoleSamples.Benchmarks
 {
     public class LogialXORBenchmarks
     {
-        private readonly ITrainer _trainer1;
-        private readonly NeuralNetworkDto _neuralNetworkDto1;
-
-        private readonly ITrainerNew _trainer2;
-        private readonly NeuralNetworkDto _neuralNetworkDto2;
+        private readonly ITrainer _trainer;
 
         private readonly List<TrainingElement> _trainingData;
 
@@ -44,27 +40,18 @@ namespace NeuralNetworks.ConsoleSamples.Benchmarks
                     ExpectedOutputs = new double[] { 0D }
                 }
             };
-
-            _neuralNetworkDto1 = Builder.Build(new List<int> { 2, 3, 1 }, ActivationFunctionType.Sigmoid);
-            Randomiser.Randomise(_neuralNetworkDto1, new Random(1));
-            _trainer1 = new StochasticGradientDescent(new Sigmoid(), new CrossEntropy(), 1000, 4, 5D, 0D);
-
-            _neuralNetworkDto2 = Builder.Build(new List<int> { 2, 3, 1 }, ActivationFunctionType.Sigmoid);
-            Randomiser.Randomise(_neuralNetworkDto2, new Random(1));
-            _trainer2 = new StochasticGradientDescentNew(new CrossEntropy(), _neuralNetworkDto2.ToLayers(), 1000, 4, 5D, 0D);
             
-        }
+            var layer = new ILayer[] { new FullyConnectedLayer(new Sigmoid(), 3, 2), new FullyConnectedLayer(new Sigmoid(), 1, 3) };
+            Randomiser.Randomise(layer, new Random(1));
 
-        [Benchmark]
-        public void StochasticGradientDescentBenchmark()
-        {
-            _trainer1.Train(_neuralNetworkDto1, _trainingData);
+            _trainer = new StochasticGradientDescent(new CrossEntropy(), layer, 1000, 4, 5D, 0D);
+            
         }
 
         [Benchmark]
         public void StochasticGradientDescentNewBenchmark()
         {
-            _trainer2.Train(_trainingData);
+            _trainer.Train(_trainingData);
         }
     }
 }

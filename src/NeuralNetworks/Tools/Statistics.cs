@@ -6,11 +6,11 @@ namespace NeuralNetworks.Tools
 {
     public static class Statistics
     {
-        public static long GetTrainingLength(ITrainer trainer, NeuralNetworkDto neuralNetworkDto, List<TrainingElement> trainingData)
+        public static long GetTrainingLength(ITrainer trainer, List<TrainingElement> trainingData)
         {
             var stopWatch = new Stopwatch();
             stopWatch.Start();
-            trainer.Train(neuralNetworkDto, trainingData);
+            trainer.Train(trainingData);
             stopWatch.Stop();
             return stopWatch.ElapsedMilliseconds;
         }

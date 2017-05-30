@@ -150,12 +150,9 @@
   <ItemGroup>
     <Compile Include="Benchmarks\DigitsRecognitionBenchmarks.cs" />
     <Compile Include="Benchmarks\LogialXORBenchmarks.cs" />
-    <Compile Include="Examples\DigitsRecognitionCompareExample.cs" />
     <Compile Include="Examples\DigitsRecognitionExample.cs" />
     <Compile Include="Examples\IExample.cs" />
     <Compile Include="Examples\LogicalXORExample.cs" />
-    <Compile Include="Extensions\NeuralNetworkDtoExtensions.cs" />
-    <Compile Include="Helpers\TrainersComparer.cs" />
     <Compile Include="Helpers\TrainingDataLoader.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

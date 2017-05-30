@@ -50,7 +50,7 @@ namespace NeuralNetworks.Tests.IntegrationTests.Training
         [TestMethod]
         public void ShouldTrainUsingQuadraticCostFunction()
         {
-            var stochasticGradientDescent = new StochasticGradientDescentNew(new Quadratic(), _layers, 3000, 4, 5D, 0);
+            var stochasticGradientDescent = new StochasticGradientDescent(new Quadratic(), _layers, 3000, 4, 5D, 0);
             stochasticGradientDescent.Train(_trainingData);
 
             var neuralNetwork = new NeuralNetwork(_layers, _layers.First().PrimaryNeuronsCount);
@@ -74,7 +74,7 @@ namespace NeuralNetworks.Tests.IntegrationTests.Training
         [TestMethod]
         public void ShouldTrainUsingCrossEntropyCostFunction()
         {
-            var stochasticGradientDescent = new StochasticGradientDescentNew(new CrossEntropy(), _layers, 3000, 4, 5D, 0);
+            var stochasticGradientDescent = new StochasticGradientDescent(new CrossEntropy(), _layers, 3000, 4, 5D, 0);
             stochasticGradientDescent.Train(_trainingData);
 
             var neuralNetwork = new NeuralNetwork(_layers, _layers.First().PrimaryNeuronsCount);
@@ -98,7 +98,7 @@ namespace NeuralNetworks.Tests.IntegrationTests.Training
         [TestMethod]
         public void ShouldTrainUsingRegularizationParam()
         {
-            var stochasticGradientDescent = new StochasticGradientDescentNew(new CrossEntropy(), _layers, 3000, 4, 5D, 0.01D);
+            var stochasticGradientDescent = new StochasticGradientDescent(new CrossEntropy(), _layers, 3000, 4, 5D, 0.01D);
             stochasticGradientDescent.Train(_trainingData);
 
             var neuralNetwork = new NeuralNetwork(_layers, _layers.First().PrimaryNeuronsCount);

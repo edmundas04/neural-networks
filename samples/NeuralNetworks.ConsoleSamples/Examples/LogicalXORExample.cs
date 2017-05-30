@@ -1,10 +1,11 @@
 ﻿using NeuralNetworks.ActivationFunctions;
-using NeuralNetworks.ConsoleSamples.Extensions;
 using NeuralNetworks.CostFunctions;
+using NeuralNetworks.Layers;
 using NeuralNetworks.Tools;
 using NeuralNetworks.Training;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace NeuralNetworks.ConsoleSamples.Examples
 {
@@ -13,13 +14,13 @@ namespace NeuralNetworks.ConsoleSamples.Examples
 
         public void Run()
         {
-            var neuralNetworkDto = Builder.Build(new List<int> { 2, 3, 1 }, ActivationFunctionType.Sigmoid);
-            Randomiser.Randomise(neuralNetworkDto, new Random(5));
+            var layer = new ILayer[] { new FullyConnectedLayer(new Sigmoid(), 3, 2), new FullyConnectedLayer(new Sigmoid(), 1, 3) };
+            Randomiser.Randomise(layer, new Random(5));
 
             Console.WriteLine("Evaluationg untrained neural network");
-            DisplayEvaluation(neuralNetworkDto);
+            DisplayEvaluation(layer);
 
-            var stochasticGradientDescent = new StochasticGradientDescent(new Sigmoid(), new CrossEntropy(), 3000, 4, 5D, 0D);
+            var stochasticGradientDescent = new StochasticGradientDescent(new CrossEntropy(), layer, 3000, 4, 5D, 0D);
             var trainingData = new List<TrainingElement>
             {
                 new TrainingElement
@@ -44,15 +45,15 @@ namespace NeuralNetworks.ConsoleSamples.Examples
                 }
             };
 
-            stochasticGradientDescent.Train(neuralNetworkDto, trainingData);
+            stochasticGradientDescent.Train(trainingData);
 
             Console.WriteLine("Evaluationg trained neural network");
-            DisplayEvaluation(neuralNetworkDto);
+            DisplayEvaluation(layer);
         }
 
-        private void DisplayEvaluation(NeuralNetworkDto neuralNetworkDto)
+        private void DisplayEvaluation(ILayer[] layers)
         {
-            var neuralNetwork = new NeuralNetwork(neuralNetworkDto.ToLayers(), neuralNetworkDto.InputNeuronsCount);
+            var neuralNetwork = new NeuralNetwork(layers, layers.First().PrimaryNeuronsCount);
             var output1 = neuralNetwork.Run(new double[] { 0D, 0D })[0].ToString("N10");
             var output2 = neuralNetwork.Run(new double[] { 1D, 0D })[0].ToString("N10");
             var output3 = neuralNetwork.Run(new double[] { 0D, 1D })[0].ToString("N10");
